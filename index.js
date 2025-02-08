@@ -35,7 +35,7 @@ const purgeCommand = require('./purge.js');
 
 
 
-const modRank = require('./modrank')(client); // Import the modRank functions
+const modRank = require('./modrank'); 
 
 
 
