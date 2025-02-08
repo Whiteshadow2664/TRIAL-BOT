@@ -31,7 +31,8 @@ const purgeCommand = require('./purge.js');
 
 
 
-const modRank = require('./modrank'); //
+const modRank = require('./modrank.js');
+
 
 
 
@@ -139,7 +140,6 @@ Object.keys(wordOfTheDayTimes).forEach((language) => {
 client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
 
-    await handleBanCommand(message);
 
 
 
@@ -148,25 +148,35 @@ client.on('messageCreate', async (message) => {
 
 
 
-// Track bumping points for the bump bot
-    await modRank.trackBumpingPoints(message); 
+// Track bumping points from the specific bot
+    const BUMP_BOT_ID = '540129267728515072';  // Replace with actual bot ID
+    const BUMP_MESSAGE = 'Thx for bumping our Server!';  // Replace with actual message content
 
-    // Handle !modrank command
-    if (message.content.toLowerCase() === '!modrank') {
-        await modRank.execute(message); // Display the leaderboard
-    } 
+  if (message.author.id === BUMP_BOT_ID && message.content.includes(BUMP_MESSAGE)) {
+    modRank.trackBumpingPoints(message);
+  }
 
-    // Optional: Update mod rank when a moderator sends a message
-    const moderatorRole = message.guild.roles.cache.find(role => role.name.toLowerCase() === 'moderator');
-    if (moderatorRole && message.member.roles.cache.has(moderatorRole.id)) {
-        await modRank.updateModRank(message.author.id, message.author.username, message.guild); // Update points for moderators
-    }
+if (message.content === '!modrank') {
+  modRank.executeModRank(message);
+}
 
-
-
-
+if (message.content === '!bumps') {
+  modRank.executeBumpLeaderboard(message);
+}
 
 
+
+
+
+
+
+
+
+
+
+       
+
+        await handleBanCommand(message);
         await handleSpamDetection(message);
 await handleBanCommand(message);
 if (message.content.toLowerCase() === '!leaderboard') {
