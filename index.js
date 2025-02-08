@@ -459,6 +459,7 @@ client.once('ready', () => {
 // Event when a member joins the server
 client.on('guildMemberAdd', (member) => {
     handleMemberJoin(member); // Call the handle join function
+    bumpReminder.startBumpReminder(client);
 }); 
 
 // Event when a member leaves the server
