@@ -163,10 +163,8 @@ async function executeModRank(message) {
       leaderboard += `\n🎉 Congratulations to **#1** for being the top moderator! 🎉`;
 
       const embed = new EmbedBuilder()
-        .setColor('#acf508')
-        .setTitle('Moderator Leaderboard')
-        .setDescription(leaderboard)
-        .setTimestamp();
+        .setColor('#acf508')       
+        .setDescription(leaderboard)     
       message.channel.send({ embeds: [embed] });
     } finally {
       client.release(); // Release connection back to the pool
@@ -200,10 +198,8 @@ async function executeBumpLeaderboard(message) {
       });
 
       const embed = new EmbedBuilder()
-        .setColor('#acf508')
-        .setTitle('Disboard Bump Leaderboard')
+        .setColor('#acf508')   
         .setDescription(leaderboard)
-        .setTimestamp();
       message.channel.send({ embeds: [embed] });
     } finally {
       client.release(); // Release connection back to the pool
