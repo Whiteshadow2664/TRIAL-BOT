@@ -214,9 +214,23 @@ async function executeBumpLeaderboard(message) {
   }
 }
 
-module.exports = {
-  updateModRank,
-  trackBumpingPoints,
-  executeModRank,
-  executeBumpLeaderboard
+// Add this part to handle message creation event
+module.exports = (client) => {
+  client.on('messageCreate', (message) => {
+    if (message.author.bot) return; // Ignore bot messages
+
+    // Call updateModRank when a message is sent by a moderator
+    updateModRank(message.author.id, message.author.username, message.guild);
+    
+    // Call trackBumpingPoints to track bump messages
+    trackBumpingPoints(message);
+  });
+
+  // Expose functions for usage in other parts of the bot
+  return {
+    updateModRank,
+    trackBumpingPoints,
+    executeModRank,
+    executeBumpLeaderboard
+  };
 };
