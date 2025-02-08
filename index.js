@@ -35,7 +35,6 @@ const purgeCommand = require('./purge.js');
 
 
 
-const modRank = require('./modrank'); 
 
 
 
@@ -59,6 +58,18 @@ GatewayIntentBits.GuildMembers,
     ],
     partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 });
+
+
+
+
+
+const modRank = require('./modrank')(client);
+
+
+
+
+
+
 
 
 // Express Server to Keep Bot Alive
