@@ -35,10 +35,6 @@ const modRank = require('./modrank'); //
 
 
 
-
-const bumpReminder = require('./bumpReminder.js');
-
-
 // Environment Variables
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 
@@ -143,22 +139,14 @@ Object.keys(wordOfTheDayTimes).forEach((language) => {
 client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
 
-
-
-
-
-
-    await bumpReminder.handleBump(message);
-
-
-
-
-
-
-
-
-
     await handleBanCommand(message);
+
+
+
+
+
+
+
 
 // Track bumping points for the bump bot
     await modRank.trackBumpingPoints(message); 
@@ -173,6 +161,12 @@ client.on('messageCreate', async (message) => {
     if (moderatorRole && message.member.roles.cache.has(moderatorRole.id)) {
         await modRank.updateModRank(message.author.id, message.author.username, message.guild); // Update points for moderators
     }
+
+
+
+
+
+
         await handleSpamDetection(message);
 await handleBanCommand(message);
 if (message.content.toLowerCase() === '!leaderboard') {
@@ -459,7 +453,6 @@ client.once('ready', () => {
 // Event when a member joins the server
 client.on('guildMemberAdd', (member) => {
     handleMemberJoin(member); // Call the handle join function
-    bumpReminder.startBumpReminder(client);
 }); 
 
 // Event when a member leaves the server
