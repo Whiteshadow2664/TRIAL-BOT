@@ -32,8 +32,17 @@ module.exports = {
         if (message.embeds.length > 0) {
             const embed = message.embeds[0];
             if (embed.description && embed.description.includes('Bump done! :thumbsup:')) {
-                // Send the after bump message
-                message.channel.send("Bump done! :thumbsup:\nCheck it out [on DISBOARD](https://disboard.org/server/793744179066699787).");
+                // Extract the user who bumped from the embed
+                const userMatch = embed.description.match(/<@!?(\d+)>/);
+                if (!userMatch) return;
+
+                const bumperId = userMatch[1];
+
+                // Send the after bump message thanking the user and schedule the next reminder
+                message.channel.send(`Thx for bumping our Server! We will remind you in 2 hours! <@${bumperId}>`);
+
+                // Optionally you can log this in your console as well for testing
+                console.log(`User ${bumperId} bumped the server.`);
             }
         }
     }
