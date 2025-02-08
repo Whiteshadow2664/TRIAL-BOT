@@ -154,7 +154,6 @@ async function executeModRank(message) {
       }
 
       let leaderboard = '** **\n\n';
-
 result.rows.forEach((row, index) => {
   const avgPoints = (row.points / row.days_as_mod).toFixed(2);
   leaderboard += `**#${index + 1}** | **${row.days_as_mod} Days** | **${row.username}** - **P:** ${row.points} | **AVG:** ${avgPoints}\n`;
@@ -196,7 +195,6 @@ async function executeBumpLeaderboard(message) {
       }
 
       let leaderboard = '** **\n\n';
-
 result.rows.forEach((row, index) => {
   leaderboard += `**#${index + 1}** | **${row.username}** - **${row.bumps} Bumps**\n`;
 });
