@@ -18,5 +18,8 @@
     "pg": "^8.11.1",
     "moment-timezone": "^0.5.34",
     "dotenv": "^10.0.0"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }
