@@ -153,7 +153,7 @@ async function executeModRank(message) {
         return message.channel.send('No moderator activity recorded yet.');
       }
 
-      let leaderboard = '** **\n\n';
+      
 result.rows.forEach((row, index) => {
   const avgPoints = (row.points / row.days_as_mod).toFixed(2);
   leaderboard += `**#${index + 1}** | **${row.days_as_mod} Days** | **${row.username}** - **P:** ${row.points} | **AVG:** ${avgPoints}\n`;
@@ -194,7 +194,7 @@ async function executeBumpLeaderboard(message) {
         return message.channel.send('No bumps recorded yet.');
       }
 
-      let leaderboard = '** **\n\n';
+      
 result.rows.forEach((row, index) => {
   leaderboard += `**#${index + 1}** | **${row.username}** - **${row.bumps} Bumps**\n`;
 });
