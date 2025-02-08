@@ -153,20 +153,23 @@ async function executeModRank(message) {
         return message.channel.send('No moderator activity recorded yet.');
       }
 
-      let leaderboard = '**Moderator Leaderboard**\n';
-      result.rows.forEach((row, index) => {
-        const avgPoints = (row.points / row.days_as_mod).toFixed(2);
-        leaderboard += `**#${index + 1}** | **${row.username}** - **P:** ${row.points} | **AVG:** ${avgPoints}\n`;
-      });
+      let leaderboard = '**Moderator Leaderboard**\n\n'; // Add two newline characters for space
 
-      // Add cheering for the top moderator
-      leaderboard += `\n🎉 Congratulations to **#1** for being the top moderator! 🎉`;
+// Loop through and format the leaderboard entries
+result.rows.forEach((row, index) => {
+  const avgPoints = (row.points / row.days_as_mod).toFixed(2);
+  leaderboard += `**#${index + 1}** | **${row.username}** - **P:** ${row.points} | **AVG:** ${avgPoints}\n`;
+});
 
-      const embed = new EmbedBuilder()
-        .setColor('#acf508')
-        .setTitle('Moderator Leaderboard')
-        .setDescription(leaderboard)     
-      message.channel.send({ embeds: [embed] });
+// Add a blank line before the congratulatory message
+leaderboard += `\n🎉 Congratulations to **#1** for being the top moderator! 🎉`;
+
+const embed = new EmbedBuilder()
+  .setColor('#acf508')
+  .setTitle('Moderator Leaderboard')
+  .setDescription(leaderboard);
+
+message.channel.send({ embeds: [embed] });
     } finally {
       client.release(); // Release connection back to the pool
     }
@@ -193,16 +196,19 @@ async function executeBumpLeaderboard(message) {
         return message.channel.send('No bumps recorded yet.');
       }
 
-      let leaderboard = '**Disboard Bump Leaderboard**\n';
-      result.rows.forEach((row, index) => {
-        leaderboard += `**#${index + 1}** | **${row.username}** - **${row.bumps} Bumps**\n`;
-      });
+      let leaderboard = '**Disboard Bump Leaderboard**\n\n'; // Add two newline characters for space
 
-      const embed = new EmbedBuilder()
-        .setColor('#acf508')
-        .setTitle('Disboard Bump Leaderboard')
-        .setDescription(leaderboard)     
-      message.channel.send({ embeds: [embed] });
+// Loop through and format the leaderboard entries
+result.rows.forEach((row, index) => {
+  leaderboard += `**#${index + 1}** | **${row.username}** - **${row.bumps} Bumps**\n`;
+});
+
+const embed = new EmbedBuilder()
+  .setColor('#acf508')
+  .setTitle('Disboard Bump Leaderboard')
+  .setDescription(leaderboard);
+
+message.channel.send({ embeds: [embed] });
     } finally {
       client.release(); // Release connection back to the pool
     }
