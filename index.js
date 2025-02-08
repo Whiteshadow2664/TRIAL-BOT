@@ -31,7 +31,12 @@ const purgeCommand = require('./purge.js');
 
 
 
-const modRank = require('./modrank.js');
+
+
+
+
+
+
 
 
 
@@ -140,29 +145,7 @@ Object.keys(wordOfTheDayTimes).forEach((language) => {
 client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
 
-
-
-
-
-
-
-
-
-// Track bumping points from the specific bot
-    const BUMP_BOT_ID = '540129267728515072';  // Replace with actual bot ID
-    const BUMP_MESSAGE = 'Thx for bumping our Server!';  // Replace with actual message content
-
-  if (message.author.id === BUMP_BOT_ID && message.content.includes(BUMP_MESSAGE)) {
-    modRank.trackBumpingPoints(message);
-  }
-
-if (message.content === '!modrank') {
-  modRank.executeModRank(message);
-}
-
-if (message.content === '!bumps') {
-  modRank.executeBumpLeaderboard(message);
-}
+    await handleBanCommand(message);
 
 
 
@@ -174,9 +157,19 @@ if (message.content === '!bumps') {
 
 
 
-       
 
-        await handleBanCommand(message);
+
+
+
+
+
+
+
+
+
+
+
+
         await handleSpamDetection(message);
 await handleBanCommand(message);
 if (message.content.toLowerCase() === '!leaderboard') {
