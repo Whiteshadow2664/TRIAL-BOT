@@ -153,7 +153,7 @@ async function executeModRank(message) {
         return message.channel.send('No moderator activity recorded yet.');
       }
 
-      let leaderboard = '**Moderator Leaderboard**\n\n'; // Add two newline characters for space
+      let leaderboard = '** **\n\n'; // Add two newline characters for space
 
 // Loop through and format the leaderboard entries
 result.rows.forEach((row, index) => {
@@ -196,7 +196,7 @@ async function executeBumpLeaderboard(message) {
         return message.channel.send('No bumps recorded yet.');
       }
 
-      let leaderboard = '**Disboard Bump Leaderboard**\n\n'; // Add two newline characters for space
+      let leaderboard = '** **\n\n'; // Add two newline characters for space
 
 // Loop through and format the leaderboard entries
 result.rows.forEach((row, index) => {
