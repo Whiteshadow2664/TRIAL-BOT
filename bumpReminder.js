@@ -6,6 +6,9 @@ const REMINDER_ROLE_NAME = 'bump me'; // Role to be pinged for reminders
 const REMINDER_CHANNEL_ID = '1337072576597463084'; // Target channel for reminders
 const REMINDER_INTERVAL = 2 * 60 * 60 * 1000; // 2 hours in milliseconds
 
+// Store user who bumped the server temporarily
+let lastUserWhoBumped = null;
+
 module.exports = {
     startBumpReminder(client) {
         // Reminder every 2 hours to bump
@@ -28,7 +31,17 @@ module.exports = {
         }, REMINDER_INTERVAL);
     },
 
-    async handleBump(message) {
+    async handleBumpInteraction(interaction) {
+        if (interaction.commandName === 'bump') {
+            // Track the user who issued the bump command
+            lastUserWhoBumped = interaction.user.id;
+
+            // Send a confirmation message to the channel
+            await interaction.reply({ content: 'Bump request received! Please wait for confirmation from Disboard.', ephemeral: true });
+        }
+    },
+
+    async handleBumpConfirmation(message) {
         if (message.author.id !== BUMP_BOT_ID) return; // Ensure it's from Disboard
 
         if (message.embeds.length > 0) {
@@ -36,13 +49,14 @@ module.exports = {
 
             // Check for the "Bump done!" message
             if (embed.description && embed.description.includes('Bump done! :thumbsup:')) {
-                // Extract the user who performed the bump
-                const userMatch = embed.description.match(/<@!?(\d+)>/);
-                if (userMatch) {
-                    const userId = userMatch[1];
-
+                // Check if we have a user who bumped
+                if (lastUserWhoBumped) {
                     // Send a thank-you message to the user who bumped
-                    message.channel.send(`Thx for bumping our Server! We will remind you in 2 hours! <@${userId}>`);
+                    const user = await message.guild.members.fetch(lastUserWhoBumped);
+                    message.channel.send(`Thx for bumping our Server! We will remind you in 2 hours! <@${user.id}>`);
+
+                    // Optionally reset after thanking
+                    lastUserWhoBumped = null;
                 }
             }
         }
