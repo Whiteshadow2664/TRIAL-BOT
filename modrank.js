@@ -158,7 +158,7 @@ async function executeModRank(message) {
 // Loop through and format the leaderboard entries
 result.rows.forEach((row, index) => {
   const avgPoints = (row.points / row.days_as_mod).toFixed(2);
-  leaderboard += `**#${index + 1}** | **${row.username}** - **P:** ${row.points} | **AVG:** ${avgPoints}\n`;
+  leaderboard += `**#${index + 1}** | **${row.days_as_mod} Days** | **${row.username}** - **P:** ${row.points} | **AVG:** ${avgPoints}\n`;
 });
 
 // Add a blank line before the congratulatory message
