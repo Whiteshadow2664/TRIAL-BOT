@@ -35,7 +35,7 @@ const purgeCommand = require('./purge.js');
 
 
 
-
+const modRank = require('./modrank')(client); // Import the modRank functions
 
 
 
@@ -156,6 +156,15 @@ client.on('messageCreate', async (message) => {
 
 
 
+  if (message.content.toLowerCase() === '!modrank') {
+    // Call the function to display the mod leaderboard
+    modRank.executeModRank(message);
+  }
+
+  if (message.content.toLowerCase() === '!bumps') {
+    // Call the function to display the bump leaderboard
+    modRank.executeBumpLeaderboard(message);
+  }
 
 
 
