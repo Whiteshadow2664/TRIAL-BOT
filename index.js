@@ -130,6 +130,18 @@ Object.keys(wordOfTheDayTimes).forEach((language) => {
   });
 });
 
+
+
+const bumps = require('./bumps');  // Import the bumps feature
+
+
+
+ 
+
+
+
+
+
 // Check if the message is badwords in any language
 client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
@@ -137,6 +149,13 @@ client.on('messageCreate', async (message) => {
     await handleBanCommand(message);
 
 
+   // Track bump when Fibo bot sends bump messages
+    await bumps.trackBump(message);
+    
+    // Handle the `!bumps` command to display the leaderboard
+    if (message.content.toLowerCase() === '!bumps') {
+        await bumps.displayBumpLeaderboard(message);
+    }
 
 
 
