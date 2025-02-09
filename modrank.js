@@ -106,19 +106,23 @@ async function execute(message) {
                 return message.channel.send('No moderator activity recorded yet.');
             }
 
-            let leaderboard = '';  // Remove the text "Moderator Leaderboard"
-            result.rows.forEach((row, index) => {
-                const avgPoints = (row.points / row.days_as_mod).toFixed(2);
-                leaderboard += `**#${index + 1}** | **${row.days_as_mod} Days** | **${row.username}** - **P:** ${row.points} | **AVG:** ${avgPoints}\n`;
-            });
+            // Inside the execute function, after constructing the leaderboard string:
+let leaderboard = '';  // Remove the text "Moderator Leaderboard"
+result.rows.forEach((row, index) => {
+    const avgPoints = (row.points / row.days_as_mod).toFixed(2);
+    leaderboard += `**#${index + 1}** | **${row.days_as_mod} Days** | **${row.username}** - **P:** ${row.points} | **AVG:** ${avgPoints}\n`;
+});
 
-            const embed = new EmbedBuilder()
-                .setColor('#acf508')
-                .setTitle('Moderator Leaderboard')
-                .setDescription(leaderboard)
-                
+// Add congratulation for #1 user:
+const topUser = result.rows[0].username;
+leaderboard += `\n🎉 Congratulations to **${topUser}** for securing the top spot! 🎉`;
 
-            message.channel.send({ embeds: [embed] });
+const embed = new EmbedBuilder()
+    .setColor('#acf508')
+    .setTitle('Moderator Leaderboard')
+    .setDescription(leaderboard);
+
+message.channel.send({ embeds: [embed] });
         } finally {
             client.release();
         }
