@@ -39,7 +39,7 @@ const getLeaderboard = async () => {
 
 // Handle bump detection
 const trackBump = async (message) => {
-    if (message.author.id !== '1338037787924107365') return; // Only track messages from the bump bot
+    if (message.author.id !== '540129267728515072') return; // Only track messages from the bump bot
 
     const bumpMessage = "Thx for bumping our Server! We will remind you in 2 hours!";
     if (message.content.includes(bumpMessage) && message.mentions.users.size > 0) {
