@@ -157,6 +157,21 @@ Object.keys(wordOfTheDayTimes).forEach((language) => {
   });
 });
 
+client.on('interactionCreate', (interaction) => {
+  if (!interaction.isCommand()) return;
+
+  if (interaction.commandName === 'bump') {
+    // Track the user who used the bump command
+    bumpReminder.trackBumpInteraction(interaction);
+  }
+});
+
+
+
+
+
+
+
 // Check if the message is badwords in any language
 client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
