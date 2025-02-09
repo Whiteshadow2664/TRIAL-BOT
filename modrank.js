@@ -116,7 +116,7 @@ async function execute(message) {
                 .setColor('#acf508')
                 .setTitle('Moderator Leaderboard')
                 .setDescription(leaderboard)
-                .setTimestamp();
+                
 
             message.channel.send({ embeds: [embed] });
         } finally {
