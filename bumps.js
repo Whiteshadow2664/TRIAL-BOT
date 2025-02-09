@@ -49,14 +49,17 @@ const getLeaderboard = async () => {
 
 // Handle bump detection
 const trackBump = async (message) => {
-    const bumpBotId = '1338037787924107365'; // The bump bot's ID
+    const bumpBotId = '1338037787924107365'; // Replace with the actual bot's ID
     const bumpMessageSubstring = "Thx for bumping our Server! We will remind you in 2 hours!"; // Partial match
 
-    // Log all incoming messages
+    // Log every incoming message
     console.log(`Message from ${message.author.username}: ${message.content}`);
 
     // Only track messages from the specified bump bot
-    if (message.author.id !== bumpBotId) return;
+    if (message.author.id !== bumpBotId) {
+        console.log(`Message is not from the bump bot. Skipping...`);
+        return;
+    }
 
     // Check if the message contains the bump message substring and mentions a user
     if (message.content.includes(bumpMessageSubstring) && message.mentions.users.size > 0) {
