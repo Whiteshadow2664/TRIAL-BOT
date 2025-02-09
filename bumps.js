@@ -45,7 +45,7 @@ async function trackBump(message) {
                     DO UPDATE SET 
                         bump_count = bumps.bump_count + 1
                 `, [mentionedUser.id, mentionedUser.username]);
-                console.log(`Bump tracked for ${mentionedUser.username} (ID: ${mentionedUser.id})`);
+                
             } finally {
                 client.release();
             }
