@@ -132,7 +132,7 @@ Object.keys(wordOfTheDayTimes).forEach((language) => {
 
 
 
-const bumps = require('./bumps');  // Import the bumps feature
+
 
 
 
@@ -152,13 +152,6 @@ client.on('messageCreate', async (message) => {
 
 
 
-    // Track bump points if the message is from Fibo bot
-    await bumps.trackBumpingPoints(message);
-
-    // Handle the `!bumps` command
-    if (message.content.toLowerCase() === '!bumps') {
-        await bumps.displayBumpLeaderboard(message);  // Display the bump leaderboard
-    }
 
 
     // Handle !modrank command
