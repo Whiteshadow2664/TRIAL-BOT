@@ -21,14 +21,11 @@ const ticket = require('./commands/ticket');
 const leaderboard = require('./leaderboard.js');
 const linkFilter = require('./linkFilter');
 const { handleSpamDetection } = require('./spamHandler');
-const modRank = require('./modrank');
+const modRank = require('./modrank'); // Adjust the path if necessary
 const updates = require('./commands/updates');
 const { handleBanCommand } = require('./banHandler');
 const { updateBotStatus } = require('./statusUpdater');
 const dddGame = require('./dddGame');
-const handleWorksheet = require('./worksheet');
-const afkHandler = require('./afk.js');
-const purgeCommand = require('./purge.js');
 
 // Environment Variables
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
@@ -48,6 +45,7 @@ GatewayIntentBits.GuildMembers,
     ],
     partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 });
+
 
 // Express Server to Keep Bot Alive
 const app = express();
@@ -133,6 +131,8 @@ Object.keys(wordOfTheDayTimes).forEach((language) => {
 client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
 
+    await handleBanCommand(message);
+
 // Track bumping points for the bump bot
     await modRank.trackBumpingPoints(message); 
 
@@ -151,33 +151,6 @@ await handleBanCommand(message);
 if (message.content.toLowerCase() === '!leaderboard') {
    leaderboard.execute(message);
 }
-
-if (message.content.toLowerCase() === "!ws") {
-    handleWorksheet(message, client);
-}
-
-if (message.content === '!afk') {
-        afkHandler.handleAFKCommand(message);
-    } else {
-        afkHandler.handleMention(message);
-        afkHandler.handleAFKRemoval(message);
-    }
-
-    // Check if the message starts with the !purge command and is not from the bot itself
-    if (message.content.startsWith('!purge') && !message.author.bot) {
-        // Split the message content after the command name to get arguments
-        const args = message.content.slice('!purge'.length).trim().split(/ +/);
-
-        // Ensure the args array has the right structure
-        if (args.length < 1 || isNaN(args[0])) {
-            return message.reply('Please provide a valid number of messages to purge.');
-        }
-
-        // Call the execute function from purge.js, passing the message and args
-        purgeCommand.execute(message, args);
-    }
-
-
 
 if (message.content.toLowerCase() === '!ddd') {
         dddGame.execute(message);
