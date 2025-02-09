@@ -21,7 +21,7 @@ const ticket = require('./commands/ticket');
 const leaderboard = require('./leaderboard.js');
 const linkFilter = require('./linkFilter');
 const { handleSpamDetection } = require('./spamHandler');
-const modRank = require('./modrank'); // Adjust the path if necessary
+const modRank = require('./modrank');
 const updates = require('./commands/updates');
 const { handleBanCommand } = require('./banHandler');
 const { updateBotStatus } = require('./statusUpdater');
@@ -48,7 +48,6 @@ GatewayIntentBits.GuildMembers,
     ],
     partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 });
-
 
 // Express Server to Keep Bot Alive
 const app = express();
@@ -130,44 +129,12 @@ Object.keys(wordOfTheDayTimes).forEach((language) => {
   });
 });
 
-
-
-
-
-const bumps = require('./bumps');
-
- 
-
-
-
-
-
 // Check if the message is badwords in any language
 client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
 
-    await handleBanCommand(message);
-
-
-
-
-
-
-    // Track bumps
-    await bumps.trackBump(message);
-
-    if (message.content.startsWith('!bumps')) {
-        await bumps.execute(message);
-    }
-
-
-
-
-
-
-
-
-
+// Track bumping points for the bump bot
+    await modRank.trackBumpingPoints(message); 
 
     // Handle !modrank command
     if (message.content.toLowerCase() === '!modrank') {
@@ -179,13 +146,6 @@ client.on('messageCreate', async (message) => {
     if (moderatorRole && message.member.roles.cache.has(moderatorRole.id)) {
         await modRank.updateModRank(message.author.id, message.author.username, message.guild); // Update points for moderators
     }
-
-
-
-
-
-
-
         await handleSpamDetection(message);
 await handleBanCommand(message);
 if (message.content.toLowerCase() === '!leaderboard') {
