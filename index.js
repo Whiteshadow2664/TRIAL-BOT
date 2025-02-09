@@ -136,8 +136,13 @@ client.on('messageCreate', async (message) => {
 
     await handleBanCommand(message);
 
-// Track bumping points for the bump bot
-    await modRank.trackBumpingPoints(message); 
+
+
+
+
+
+
+
 
     // Handle !modrank command
     if (message.content.toLowerCase() === '!modrank') {
@@ -149,6 +154,13 @@ client.on('messageCreate', async (message) => {
     if (moderatorRole && message.member.roles.cache.has(moderatorRole.id)) {
         await modRank.updateModRank(message.author.id, message.author.username, message.guild); // Update points for moderators
     }
+
+
+
+
+
+
+
         await handleSpamDetection(message);
 await handleBanCommand(message);
 if (message.content.toLowerCase() === '!leaderboard') {
