@@ -28,8 +28,8 @@ const updateBumpCount = async (userId, username) => {
             ON CONFLICT (user_id)
             DO UPDATE SET bump_count = bump_leaderboard.bump_count + 1, username = EXCLUDED.username;
         `;
-        await pool.query(query, [userId, username]);
-        console.log(`Bump recorded for: ${username}`);
+        const res = await pool.query(query, [userId, username]);
+        console.log(`Bump recorded for: ${username}`);  // Log successful update
     } catch (err) {
         console.error("Error updating bump count:", err);
     }
@@ -52,13 +52,19 @@ const trackBump = async (message) => {
     const bumpBotId = '1338037787924107365'; // The bump bot's ID
     const bumpMessageSubstring = "Thx for bumping our Server! We will remind you in 2 hours!"; // Partial match
 
+    // Log all incoming messages
+    console.log(`Message from ${message.author.username}: ${message.content}`);
+
     // Only track messages from the specified bump bot
     if (message.author.id !== bumpBotId) return;
 
     // Check if the message contains the bump message substring and mentions a user
     if (message.content.includes(bumpMessageSubstring) && message.mentions.users.size > 0) {
         const bumpedUser = message.mentions.users.first();
+        console.log(`Bump detected! User: ${bumpedUser.username}`);
         await updateBumpCount(bumpedUser.id, bumpedUser.username);
+    } else {
+        console.log("No bump message or no user mentioned.");
     }
 };
 
