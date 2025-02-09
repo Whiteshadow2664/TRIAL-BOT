@@ -91,4 +91,21 @@ async function displayBumpLeaderboard(message) {
     }
 }
 
+// Solution 1: Keep connection alive by running periodic queries
+setInterval(async () => {
+    try {
+        const client = await pool.connect();
+        await client.query('SELECT 1'); // Keeps the connection active
+        client.release();
+    } catch (err) {
+        console.error('Error keeping database connection alive:', err);
+    }
+}, 300000); // 5 minutes interval
+
+// Solution 2: Auto-reconnect on connection loss
+pool.on('error', (err) => {
+    console.error('Database connection lost. Reconnecting...', err);
+    // You could reinitialize the pool here if necessary
+});
+
 module.exports = { trackBump, displayBumpLeaderboard };
