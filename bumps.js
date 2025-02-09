@@ -25,11 +25,11 @@ async function createBumpTable() {
     }
 }
 
-// Step 2: Call the function right after the pool setup
+// Call the function right after the pool setup
 createBumpTable();  // Ensure table exists on startup
 
-// Step 3: Function to track bumps when Fibo bot sends a bump message
-async function trackBump(message) {
+// Step 2: Function to track bumps when Fibo bot sends a bump message
+async function trackBumpingPoints(message) {
     // Check if the message is from Fibo bot and matches the bump format
     if (message.author.id === '540129267728515072' && message.content.includes('Thx for bumping our Server!')) {
         const mentionedUser = message.mentions.users.first();
@@ -55,7 +55,7 @@ async function trackBump(message) {
     }
 }
 
-// Step 4: Function to display the bump leaderboard when `!bumps` command is triggered
+// Step 3: Function to display the bump leaderboard when `!bumps` command is triggered
 async function displayBumpLeaderboard(message) {
     try {
         const client = await pool.connect();
@@ -108,4 +108,4 @@ pool.on('error', (err) => {
     // You could reinitialize the pool here if necessary
 });
 
-module.exports = { trackBump, displayBumpLeaderboard };
+module.exports = { trackBumpingPoints, displayBumpLeaderboard };
