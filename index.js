@@ -149,15 +149,16 @@ client.on('messageCreate', async (message) => {
     await handleBanCommand(message);
 
 
-   // Track bump when Fibo bot sends bump messages
 
-    trackBumpingPoints(message);
 
-    
+
+    // Track bump points if the message is from Fibo bot
+    await trackBumpingPoints(message);
+
+    // Handle the `!bumps` command
     if (message.content.toLowerCase() === '!bumps') {
-        displayBumpLeaderboard(message);
+        await displayBumpLeaderboard(message); // Display the bump leaderboard
     }
-
 
 
 
