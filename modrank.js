@@ -8,25 +8,8 @@ let pool = new Pool({
     connectionTimeoutMillis: 5000  // Ensures quick reconnection
 });
 
-// Step 1: Place this function just after the pool connection setup
-async function createTable() {
-    try {
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS mod_rank (
-                user_id TEXT PRIMARY KEY,
-                username TEXT NOT NULL,
-                points INT DEFAULT 0,
-                joined_at TIMESTAMP DEFAULT NOW()
-            );
-        `);
-        console.log('✅ mod_rank table checked/created.');
-    } catch (error) {
-        console.error('❌ Error creating mod_rank table:', error);
-    }
-}
-
-// Step 2: Call the function right after the pool setup
-createTable();  // Ensure table exists on startup
+const BUMP_BOT_ID = '735147814878969968';
+const BUMP_MESSAGE = 'Thx for bumping our Server! We will remind you in 2 hours!';
 
 /**
  * Keeps the database connection alive by running a query every 5 minutes.
@@ -35,7 +18,7 @@ function keepDBAlive() {
     setInterval(async () => {
         try {
             await pool.query('SELECT 1');  // Simple query to prevent Neon from terminating the connection
-            
+            console.log('DB connection refreshed');
         } catch (error) {
             console.error('Error keeping DB alive:', error);
         }
@@ -88,6 +71,34 @@ async function updateModRank(userId, username, guild) {
 }
 
 /**
+ * Tracks bump points when a bump message is detected.
+ */
+async function trackBumpingPoints(message) {
+    if (message.author.id !== BUMP_BOT_ID || !message.content.startsWith(BUMP_MESSAGE)) return;
+
+    const mentionedUser = message.mentions.users.first();
+    if (!mentionedUser) return;
+
+    try {
+        const client = await pool.connect();
+        try {
+            await client.query(`
+                INSERT INTO mod_rank (user_id, username, points, joined_at)
+                VALUES ($1, $2, 3, NOW())
+                ON CONFLICT (user_id) 
+                DO UPDATE SET 
+                    username = EXCLUDED.username,
+                    points = mod_rank.points + 3
+            `, [mentionedUser.id, mentionedUser.username]);
+        } finally {
+            client.release();
+        }
+    } catch (error) {
+        console.error('Error tracking bump points:', error);
+    }
+}
+
+/**
  * Displays the moderator leaderboard.
  */
 async function execute(message) {
@@ -106,23 +117,19 @@ async function execute(message) {
                 return message.channel.send('No moderator activity recorded yet.');
             }
 
-            // Inside the execute function, after constructing the leaderboard string:
-let leaderboard = '';  // Remove the text "Moderator Leaderboard"
-result.rows.forEach((row, index) => {
-    const avgPoints = (row.points / row.days_as_mod).toFixed(2);
-    leaderboard += `**#${index + 1}** | **${row.days_as_mod} Days** | **${row.username}** - **P:** ${row.points} | **AVG:** ${avgPoints}\n`;
-});
+            let leaderboard = '**Moderator Leaderboard**\n';
+            result.rows.forEach((row, index) => {
+                const avgPoints = (row.points / row.days_as_mod).toFixed(2);
+                leaderboard += `**#${index + 1}** | **${row.days_as_mod} Days** | **${row.username}** - **P:** ${row.points} | **AVG:** ${avgPoints}\n`;
+            });
 
-// Add congratulation for #1 user:
-const topUser = result.rows[0].username;
-leaderboard += `\n🎉 Congratulations to **${topUser}** for securing the top spot! 🎉`;
+            const embed = new EmbedBuilder()
+                .setColor('#acf508')
+                .setTitle('Moderator Leaderboard')
+                .setDescription(leaderboard)
+                .setTimestamp();
 
-const embed = new EmbedBuilder()
-    .setColor('#acf508')
-    .setTitle('Moderator Leaderboard')
-    .setDescription(leaderboard);
-
-message.channel.send({ embeds: [embed] });
+            message.channel.send({ embeds: [embed] });
         } finally {
             client.release();
         }
@@ -132,4 +139,4 @@ message.channel.send({ embeds: [embed] });
     }
 }
 
-module.exports = { updateModRank, execute };
+module.exports = { updateModRank, trackBumpingPoints, execute };
