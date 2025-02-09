@@ -41,7 +41,7 @@ async function createTables() {
 createTables();
 
 // Define the specific BUMP_BOT_ID to track
-const BUMP_BOT_ID = 'YOUR_NEW_BUMP_BOT_ID';  // Replace with the new bump bot ID
+const BUMP_BOT_ID = '1338037787924107365';  // Replace with the new bump bot ID
 
 /**
  * Handles bump tracking and awarding points when /bump command is used.
