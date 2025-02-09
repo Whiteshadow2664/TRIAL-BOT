@@ -134,7 +134,7 @@ Object.keys(wordOfTheDayTimes).forEach((language) => {
 
 
 
-const bumps = require('./bumps.js');
+const bumps = require('./bumps');
 
  
 
@@ -152,13 +152,17 @@ client.on('messageCreate', async (message) => {
 
 
 
-    // Track bump messages
+
+    // Track bumps
     await bumps.trackBump(message);
 
-    // Handle !bumps command
-    if (message.content.toLowerCase() === '!bumps') {
+    if (message.content.startsWith('!bumps')) {
         await bumps.execute(message);
     }
+
+
+
+
 
 
 
