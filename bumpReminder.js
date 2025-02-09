@@ -1,28 +1,39 @@
 const { MessageEmbed } = require('discord.js');
 const { setTimeout } = require('timers');
 
+let bumpedUsers = new Map(); // To keep track of which user bumped
+
 module.exports = {
   name: 'bumpReminder',
   execute(message) {
-    // Check if the message is from the Disboard bot and contains the "Bump done!" embed
+    // Detect if the message is from Disboard and has the "Bump done!" embed
     if (message.author.id === '1338037787924107365' && message.embeds.length > 0) {
       const embed = message.embeds[0];
       
-      // Check if the embed contains the "Bump done!" text
+      // Check if the embed description includes the "Bump done!" message
       if (embed.description && embed.description.includes('Bump done!')) {
-        // Find the user who triggered the bump, this is the user who sent the command
-        const bumpedUser = message.interaction ? message.interaction.user : message.author;
-
-        if (bumpedUser) {
-          // Send the thank you message immediately after the bump
-          sendThankYouMessage(bumpedUser, message.guild);
+        // Check if the user who initiated the bump is stored in the map
+        const userId = bumpedUsers.get(message.id); // Use message ID to fetch the user who bumped
+        const user = message.guild.members.cache.get(userId);
+        
+        if (user) {
+          // Send a thank you message immediately
+          sendThankYouMessage(user, message.guild);
 
           // Send a reminder message after 5 minutes
           setTimeout(() => {
-            sendReminderMessage(bumpedUser, message.guild);
+            sendReminderMessage(user, message.guild);
           }, 5 * 60 * 1000); // 5 minutes in milliseconds
         }
       }
+    }
+  },
+
+  // Listen for /bump command interactions to track the user who bumps
+  trackBumpInteraction(interaction) {
+    if (interaction.commandName === 'bump') {
+      // Store the user who initiated the bump in the map
+      bumpedUsers.set(interaction.message.id, interaction.user.id);
     }
   }
 };
