@@ -49,7 +49,7 @@ const getLeaderboard = async () => {
 
 // Handle bump detection
 const trackBump = async (message) => {
-    const bumpBotId = 'BOT_B_ID'; // Replace with the actual bot B ID
+    const bumpBotId = 'BOT_B_ID'; // Replace with Bot B's actual ID
     const bumpMessageSubstring = "Thx for bumping our Server! We will remind you in 2 hours!"; // Partial match
 
     // Only track messages from Bot B (the bump bot)
