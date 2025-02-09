@@ -153,8 +153,7 @@ client.on('messageCreate', async (message) => {
 
 
     // Track bump points if the message is from Fibo bot
-    await trackBumpingPoints(message);
-
+    await bumps.trackBumpingPoints(message);
     // Handle the `!bumps` command
     if (message.content.toLowerCase() === '!bumps') {
         await displayBumpLeaderboard(message); // Display the bump leaderboard
