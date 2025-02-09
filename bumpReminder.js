@@ -1,54 +1,50 @@
-const { Client, EmbedBuilder } = require('discord.js');
+const { Client, MessageEmbed } = require('discord.js');
 const { setTimeout } = require('timers');
 
-const client = new Client({ intents: ['GUILDS', 'GUILD_MESSAGES', 'DIRECT_MESSAGES'] });
+module.exports = {
+  name: 'bumpReminder',
+  execute(message) {
+    // Check if the message is from Disboard bot
+    if (message.author.id === '1338037787924107365' && message.content.includes('Thx for bumping our Server!')) {
+      // Find the user who bumped the server
+      const bumpedUser = message.mentions.users.first();
+      if (bumpedUser) {
+        // Thank the user immediately after the bump
+        sendThankYouMessage(bumpedUser, message.guild);
 
-const BUMP_BOT_ID = '1338037787924107365'; // Bump bot ID
-const THANK_YOU_MESSAGE = 'Thx for bumping our Server! We will remind you in 2 hours!';
+        // Send a reminder message after 5 minutes
+        setTimeout(() => {
+          sendReminderMessage(bumpedUser, message.guild);
+        }, 5 * 60 * 1000); // 5 minutes in milliseconds
+      }
+    }
+  }
+};
 
-/**
- * This function handles sending the "thank you" message when a user bumps the server.
- */
-async function sendThankYouMessage(message) {
-  const mentionedUser = message.mentions.users.first();
-  if (mentionedUser) {
-    await message.channel.send(`Thx for bumping our Server! We will remind you in 2 hours! <@${mentionedUser.id}>`);
+// Function to send a thank you message
+function sendThankYouMessage(user, guild) {
+  const embed = new MessageEmbed()
+    .setColor('#0099ff')
+    .setTitle('Thank you for bumping!')
+    .setDescription(`Thank you, ${user}, for bumping the server! Your support is greatly appreciated!`);
 
-    // Set a 5-minute reminder to remind the user to bump again
-    setTimeout(() => {
-      sendReminder(mentionedUser);
-    }, 5 * 60 * 1000); // 5 minutes
+  // Send the message in the current channel or you can choose a specific channel
+  const channel = guild.channels.cache.find(c => c.name === 'general'); // Change to desired channel name
+  if (channel) {
+    channel.send({ embeds: [embed] });
   }
 }
 
-/**
- * This function sends a reminder message after 5 minutes.
- */
-async function sendReminder(user) {
-  const reminderEmbed = new EmbedBuilder()
-    .setColor('#acf508')
-    .setDescription(`@${user.username}, it's time to bump!`)
-    .addFields(
-      { name: 'Reminder', value: 'Bump our server by typing `/bump`!' },
-      { name: 'Time', value: new Date().toLocaleString() }
-    );
+// Function to send a reminder message after 5 minutes
+function sendReminderMessage(user, guild) {
+  const embed = new MessageEmbed()
+    .setColor('#ff9900')
+    .setTitle('Friendly Reminder')
+    .setDescription(`Hey ${user}, don't forget to bump the server again! Your support helps us grow!`);
 
-  const reminderChannel = user.dmChannel || await user.createDM();
-  await reminderChannel.send({ content: `@${user.username}`, embeds: [reminderEmbed] });
-}
-
-/**
- * Listen to message events and track bumps.
- */
-client.on('messageCreate', async (message) => {
-  // Ignore bot messages
-  if (message.author.bot) return;
-
-  // Check if the message is from the bump bot
-  if (message.author.id === BUMP_BOT_ID && message.content.includes('Thx for bumping our Server!')) {
-    sendThankYouMessage(message); // Send "thank you" message and set reminder
+  // Send the reminder message in the same channel or another one
+  const channel = guild.channels.cache.find(c => c.name === 'general'); // Change to desired channel name
+  if (channel) {
+    channel.send({ embeds: [embed] });
   }
-});
-
-// Export the client for integration in index.js
-module.exports = client;
+}
