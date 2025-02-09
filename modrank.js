@@ -1,6 +1,8 @@
-const { Client, EmbedBuilder } = require('discord.js');
+
+const { Client, EmbedBuilder, Intents } = require('discord.js');
 const { Pool } = require('pg');
 
+// Set up PostgreSQL pool
 let pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
@@ -8,7 +10,7 @@ let pool = new Pool({
   connectionTimeoutMillis: 5000, // Ensures quick reconnection
 });
 
-// Step 1: Place this function just after the pool connection setup
+// Create tables if they don't exist
 async function createTables() {
   try {
     // Create mod_rank table for moderator leaderboard
@@ -21,7 +23,7 @@ async function createTables() {
       );
     `);
 
-    // Create bump_leaderboard table for Disboard bumps
+    // Create bump_leaderboard table for tracking bumps
     await pool.query(`
       CREATE TABLE IF NOT EXISTS bump_leaderboard (
         user_id TEXT PRIMARY KEY,
@@ -36,151 +38,62 @@ async function createTables() {
   }
 }
 
-// Step 2: Call the function right after the pool setup
-createTables(); // Ensure tables exist on startup
+// Ensure tables exist on startup
+createTables();
 
-const BUMP_BOT_ID = '735147814878969968';
-const BUMP_MESSAGE = 'Thx for bumping our Server! We will remind you in 2 hours!';
-
-/**
- * Keeps the database connection alive by running a query every 5 minutes.
- */
-function keepDBAlive() {
-  setInterval(async () => {
-    try {
-      await pool.query('SELECT 1'); // Simple query to prevent Neon from terminating the connection
-    } catch (error) {
-      console.error('Error keeping DB alive:', error);
-    }
-  }, 5 * 60 * 1000); // Runs every 5 minutes
-}
-keepDBAlive(); // Start keep-alive function
+// Define the specific BUMP_BOT_ID to track
+const BUMP_BOT_ID = '1338037787924107365';  // Replace with the new bump bot ID
 
 /**
- * Handles unexpected database connection errors and reconnects.
+ * Handles bump tracking and awarding points when /bump command is used.
  */
-pool.on('error', async (err) => {
-  console.error('Unexpected DB connection error:', err);
-  await pool.end(); // Close the current pool
-  pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 5000,
-  });
-  console.log('Reconnected to database.');
-});
+async function trackBumpPoints(interaction) {
+  // Check if the command is /bump and if it mentions the correct bot
+  if (interaction.commandName === 'bump') {
+    const mentionedBot = interaction.options.getUser('bot');
+    
+    // Ensure the mentioned bot matches the BUMP_BOT_ID
+    if (mentionedBot && mentionedBot.id === BUMP_BOT_ID) {
+      const mentionedUser = interaction.options.getUser('user');
+      
+      // Ensure a user is mentioned in the bump command
+      if (mentionedUser) {
+        try {
+          // Connect to the database
+          const client = await pool.connect();
+          try {
+            // Update the bump leaderboard
+            await client.query(`
+              INSERT INTO bump_leaderboard (user_id, username, bumps)
+              VALUES ($1, $2, 1)
+              ON CONFLICT (user_id) DO UPDATE
+              SET username = EXCLUDED.username, bumps = bump_leaderboard.bumps + 1
+            `, [mentionedUser.id, mentionedUser.username]);
 
-/**
- * Updates the moderator's rank when they send a message.
- */
-async function updateModRank(userId, username, guild) {
-  try {
-    const moderatorRole = guild.roles.cache.find(role => role.name.toLowerCase() === 'moderator');
-    const member = guild.members.cache.get(userId);
+            // Optionally, award points to the user mentioned in the bump
+            await client.query(`
+              INSERT INTO mod_rank (user_id, username, points, joined_at)
+              VALUES ($1, $2, 3, NOW())
+              ON CONFLICT (user_id) DO UPDATE
+              SET username = EXCLUDED.username, points = mod_rank.points + 3
+            `, [mentionedUser.id, mentionedUser.username]);
 
-    if (!moderatorRole || !member || !member.roles.cache.has(moderatorRole.id)) return;
-
-    const client = await pool.connect();
-    try {
-      await client.query(`
-        INSERT INTO mod_rank (user_id, username, points, joined_at)
-        VALUES ($1, $2, 1, NOW())
-        ON CONFLICT (user_id) DO UPDATE
-        SET username = EXCLUDED.username, points = mod_rank.points + 1
-      `, [userId, username]);
-    } finally {
-      client.release(); // Release connection back to the pool
-    }
-  } catch (error) {
-    console.error('Error updating mod rank:', error);
-  }
-}
-
-/**
- * Tracks bump points when a bump message is detected.
- */
-async function trackBumpingPoints(message) {
-  if (message.author.id !== BUMP_BOT_ID || !message.content.startsWith(BUMP_MESSAGE)) return;
-
-  const mentionedUser = message.mentions.users.first();
-  if (!mentionedUser) return;
-
-  try {
-    const client = await pool.connect();
-    try {
-      // Update bump leaderboard for the user
-      await client.query(`
-        INSERT INTO bump_leaderboard (user_id, username, bumps)
-        VALUES ($1, $2, 1)
-        ON CONFLICT (user_id) DO UPDATE
-        SET username = EXCLUDED.username, bumps = bump_leaderboard.bumps + 1
-      `, [mentionedUser.id, mentionedUser.username]);
-
-      // If the mentioned user is a moderator, award points as well
-      const member = message.guild.members.cache.get(mentionedUser.id);
-      if (member && member.roles.cache.some(role => role.name.toLowerCase() === 'moderator')) {
-        await client.query(`
-          INSERT INTO mod_rank (user_id, username, points, joined_at)
-          VALUES ($1, $2, 3, NOW())
-          ON CONFLICT (user_id) DO UPDATE
-          SET username = EXCLUDED.username, points = mod_rank.points + 3
-        `, [mentionedUser.id, mentionedUser.username]);
+            console.log(`Awarded 3 points to ${mentionedUser.username} for bump.`);
+          } finally {
+            client.release(); // Release connection back to the pool
+          }
+        } catch (error) {
+          console.error('Error tracking bump points:', error);
+        }
       }
-    } finally {
-      client.release(); // Release connection back to the pool
     }
-  } catch (error) {
-    console.error('Error tracking bump points:', error);
-  }
-}
-
-/**
- * Displays the moderator leaderboard.
- */
-async function executeModRank(message) {
-  try {
-    const client = await pool.connect();
-    try {
-      const result = await client.query(`
-        SELECT user_id, username, points, joined_at, (DATE_PART('day', NOW() - joined_at) + 1) AS days_as_mod
-        FROM mod_rank
-        WHERE points > 0
-        ORDER BY points DESC
-      `);
-
-      if (result.rows.length === 0) {
-        return message.channel.send('No moderator activity recorded yet.');
-      }
-
-      let leaderboard = '';
-result.rows.forEach((row, index) => {
-  const avgPoints = (row.points / row.days_as_mod).toFixed(2);
-  leaderboard += `**#${index + 1}** | **${row.days_as_mod} Days** | **${row.username}** - **P:** ${row.points} | **AVG:** ${avgPoints}\n`;
-});
-
-// Add a blank line before the congratulatory message
-leaderboard += `\n🎉 Congratulations to **#1** for being the top moderator! 🎉`;
-
-const embed = new EmbedBuilder()
-  .setColor('#acf508')
-  .setTitle('Moderator Leaderboard')
-  .setDescription(leaderboard);
-
-message.channel.send({ embeds: [embed] });
-    } finally {
-      client.release(); // Release connection back to the pool
-    }
-  } catch (error) {
-    console.error('Error fetching mod leaderboard:', error);
-    message.channel.send('Error retrieving leaderboard.');
   }
 }
 
 /**
  * Displays the bump leaderboard.
  */
-async function executeBumpLeaderboard(message) {
+async function executeBumpLeaderboard(interaction) {
   try {
     const client = await pool.connect();
     try {
@@ -191,46 +104,80 @@ async function executeBumpLeaderboard(message) {
       `);
 
       if (result.rows.length === 0) {
-        return message.channel.send('No bumps recorded yet.');
+        return interaction.reply('No bumps recorded yet.');
       }
 
       let leaderboard = '';
-result.rows.forEach((row, index) => {
-  leaderboard += `**#${index + 1}** | **${row.username}** - **${row.bumps} Bumps**\n`;
-});
+      result.rows.forEach((row, index) => {
+        leaderboard += `**#${index + 1}** | **${row.username}** - **${row.bumps} Bumps**\n`;
+      });
 
-const embed = new EmbedBuilder()
-  .setColor('#acf508')
-  .setTitle('Disboard Bump Leaderboard')
-  .setDescription(leaderboard);
+      const embed = new EmbedBuilder()
+        .setColor('#acf508')
+        .setTitle('Disboard Bump Leaderboard')
+        .setDescription(leaderboard);
 
-message.channel.send({ embeds: [embed] });
+      interaction.reply({ embeds: [embed] });
     } finally {
       client.release(); // Release connection back to the pool
     }
   } catch (error) {
     console.error('Error fetching bump leaderboard:', error);
-    message.channel.send('Error retrieving bump leaderboard.');
+    interaction.reply('Error retrieving bump leaderboard.');
   }
 }
 
-// Add this part to handle message creation event
-module.exports = (client) => {
-  client.on('messageCreate', (message) => {
-    if (message.author.bot) return; // Ignore bot messages
+// Create a client instance
+const client = new Client({
+  intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
+});
 
-    // Call updateModRank when a message is sent by a moderator
-    updateModRank(message.author.id, message.author.username, message.guild);
-    
-    // Call trackBumpingPoints to track bump messages
-    trackBumpingPoints(message);
+// Log the bot in
+client.login('YOUR_BOT_TOKEN'); // Replace with your bot token
+
+// Command registration for /bump and /bumpleaderboard
+client.once('ready', async () => {
+  console.log('Bot is online!');
+  
+  // Register the commands (assumes you've already created them via Discord Developer Portal)
+  await client.application.commands.create({
+    name: 'bump',
+    description: 'Bump the server and award points to the mentioned user.',
+    options: [
+      {
+        type: 6, // Type 6 refers to a user mention
+        name: 'user',
+        description: 'The user to award points to',
+        required: true,
+      },
+      {
+        type: 6, // Type 6 refers to a bot mention
+        name: 'bot',
+        description: 'The bot who is bumping the server',
+        required: true,
+      }
+    ],
   });
 
-  // Expose functions for usage in other parts of the bot
-  return {
-    updateModRank,
-    trackBumpingPoints,
-    executeModRank,
-    executeBumpLeaderboard
-  };
-};
+  await client.application.commands.create({
+    name: 'bumpleaderboard',
+    description: 'Shows the bump leaderboard.',
+  });
+
+  console.log('Commands registered.');
+});
+
+// Listen for interactions
+client.on('interactionCreate', async (interaction) => {
+  if (!interaction.isCommand()) return;
+
+  // Handle /bump command
+  if (interaction.commandName === 'bump') {
+    await trackBumpPoints(interaction);
+  }
+  
+  // Handle /bumpleaderboard command
+  if (interaction.commandName === 'bumpleaderboard') {
+    await executeBumpLeaderboard(interaction);
+  }
+});
