@@ -5,8 +5,8 @@ const { Pool } = require('pg');
 let pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false },
-    idleTimeoutMillis: 30000,  // Close idle connections after 30s
-    connectionTimeoutMillis: 5000  // Ensures quick reconnection
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 5000
 });
 
 // Step 1: Create the bumps table if it doesn't exist
@@ -26,32 +26,44 @@ async function createBumpTable() {
 }
 
 // Step 2: Call the function right after the pool setup
-createBumpTable();  // Ensure table exists on startup
+createBumpTable();
 
 // Step 3: Function to track bumps when Fibo bot sends a bump message
 async function trackBumpingPoints(message) {
-    // Check if the message is from Fibo bot and matches the bump format
-    if (message.author.id === '540129267728515072' && message.content.includes('Thx for bumping our Server!')) {
-        const mentionedUser = message.mentions.users.first();
-        if (!mentionedUser) return;
+    // Ensure message is from the Fibo bot
+    if (message.author.id !== '540129267728515072') return; 
 
+    // Normalize message content and check if it contains the bump message
+    const content = message.content.trim();
+    if (!content.includes('Thx for bumping our Server!')) return;
+
+    console.log(`✅ Bump message detected from Fibo bot: ${content}`);
+
+    // Extract the mentioned user
+    const mentionedUser = message.mentions.users.first();
+    if (!mentionedUser) {
+        console.log('❌ No user mentioned in the bump message.');
+        return;
+    }
+
+    console.log(`🔹 Awarding 3 points to ${mentionedUser.username} (${mentionedUser.id})`);
+
+    try {
+        const client = await pool.connect();
         try {
-            const client = await pool.connect();
-            try {
-                await client.query(`
-                    INSERT INTO bumps (user_id, username, bump_count)
-                    VALUES ($1, $2, 1)
-                    ON CONFLICT (user_id) 
-                    DO UPDATE SET 
-                        bump_count = bumps.bump_count + 1
-                `, [mentionedUser.id, mentionedUser.username]);
-                
-            } finally {
-                client.release();
-            }
-        } catch (error) {
-            console.error('❌ Error tracking bump:', error);
+            await client.query(`
+                INSERT INTO bumps (user_id, username, bump_count)
+                VALUES ($1, $2, 3)
+                ON CONFLICT (user_id) 
+                DO UPDATE SET 
+                    bump_count = bumps.bump_count + 3
+            `, [mentionedUser.id, mentionedUser.username]);
+            console.log(`✅ Successfully updated bump count for ${mentionedUser.username}`);
+        } finally {
+            client.release();
         }
+    } catch (error) {
+        console.error('❌ Error tracking bump:', error);
     }
 }
 
@@ -64,17 +76,16 @@ async function displayBumpLeaderboard(message) {
                 SELECT user_id, username, bump_count
                 FROM bumps
                 ORDER BY bump_count DESC
-                LIMIT 10;  -- Top 10 bumpers
+                LIMIT 10;
             `);
 
             if (result.rows.length === 0) {
                 return message.channel.send('No bumps recorded yet.');
             }
 
-            let leaderboard = '';
-            result.rows.forEach((row, index) => {
-                leaderboard += `**#${index + 1}** - **${row.username}** - ${row.bump_count} Bumps\n`;
-            });
+            let leaderboard = result.rows.map((row, index) =>
+                `**#${index + 1}** - **${row.username}** - ${row.bump_count} Bumps`
+            ).join('\n');
 
             const embed = new EmbedBuilder()
                 .setColor('#acf508')
@@ -91,24 +102,20 @@ async function displayBumpLeaderboard(message) {
     }
 }
 
-// Solution 1: Keep connection alive by running periodic queries
+// Keep the database connection alive
 setInterval(async () => {
     try {
         const client = await pool.connect();
-        await client.query('SELECT 1'); // Keeps the connection active
+        await client.query('SELECT 1');
         client.release();
     } catch (err) {
         console.error('Error keeping database connection alive:', err);
     }
 }, 300000); // 5 minutes interval
 
-// Solution 2: Auto-reconnect on connection loss
+// Handle database connection errors
 pool.on('error', (err) => {
     console.error('Database connection lost. Reconnecting...', err);
-    // Re-initialize the pool if necessary or handle error based on requirements
 });
-
-// Solution 3: Ensure idle timeout and connection closure is handled correctly
-// This is already part of the pool configuration (idleTimeoutMillis: 30000) and no extra code is required.
 
 module.exports = { trackBumpingPoints, displayBumpLeaderboard };
