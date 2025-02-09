@@ -31,7 +31,7 @@ createBumpTable();  // Ensure table exists on startup
 // Step 3: Function to track bumps when Fibo bot sends a bump message
 async function trackBump(message) {
     // Check if the message is from Fibo bot and matches the bump format
-    if (message.author.id === '735147814878969968' && message.content.includes('Thx for bumping our Server!')) {
+    if (message.author.id === '540129267728515072' && message.content.includes('Thx for bumping our Server!')) {
         const mentionedUser = message.mentions.users.first();
         if (!mentionedUser) return;
 
