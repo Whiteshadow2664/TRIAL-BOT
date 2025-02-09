@@ -1,4 +1,3 @@
-
 const { Client, EmbedBuilder, Intents } = require('discord.js');
 const { Pool } = require('pg');
 
@@ -42,7 +41,7 @@ async function createTables() {
 createTables();
 
 // Define the specific BUMP_BOT_ID to track
-const BUMP_BOT_ID = '1338037787924107365';  // Replace with the new bump bot ID
+const BUMP_BOT_ID = 'YOUR_NEW_BUMP_BOT_ID';  // Replace with the new bump bot ID
 
 /**
  * Handles bump tracking and awarding points when /bump command is used.
@@ -127,6 +126,44 @@ async function executeBumpLeaderboard(interaction) {
   }
 }
 
+/**
+ * Displays the modrank leaderboard.
+ */
+async function executeModRankLeaderboard(interaction) {
+  try {
+    const client = await pool.connect();
+    try {
+      const result = await client.query(`
+        SELECT user_id, username, points, DATE_PART('day', NOW() - joined_at) + 1 AS days_as_mod
+        FROM mod_rank
+        ORDER BY points DESC
+      `);
+
+      if (result.rows.length === 0) {
+        return interaction.reply('No moderators tracked yet.');
+      }
+
+      let leaderboard = '';
+      result.rows.forEach((row, index) => {
+        const avgPoints = (row.points / row.days_as_mod).toFixed(2);
+        leaderboard += `**#${index + 1}** | **${row.days_as_mod} Days** | **${row.username}** - **P: ${row.points}** | **AVG: ${avgPoints}**\n`;
+      });
+
+      const embed = new EmbedBuilder()
+        .setColor('#acf508')
+        .setTitle('Moderator Leaderboard')
+        .setDescription(leaderboard);
+
+      interaction.reply({ embeds: [embed] });
+    } finally {
+      client.release(); // Release connection back to the pool
+    }
+  } catch (error) {
+    console.error('Error fetching modrank leaderboard:', error);
+    interaction.reply('Error retrieving modrank leaderboard.');
+  }
+}
+
 // Create a client instance
 const client = new Client({
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
@@ -135,7 +172,7 @@ const client = new Client({
 // Log the bot in
 client.login('YOUR_BOT_TOKEN'); // Replace with your bot token
 
-// Command registration for /bump and /bumpleaderboard
+// Command registration for /bump, /bumpleaderboard, and /modrank
 client.once('ready', async () => {
   console.log('Bot is online!');
   
@@ -164,6 +201,11 @@ client.once('ready', async () => {
     description: 'Shows the bump leaderboard.',
   });
 
+  await client.application.commands.create({
+    name: 'modrank',
+    description: 'Shows the moderator leaderboard.',
+  });
+
   console.log('Commands registered.');
 });
 
@@ -175,9 +217,14 @@ client.on('interactionCreate', async (interaction) => {
   if (interaction.commandName === 'bump') {
     await trackBumpPoints(interaction);
   }
-  
+
   // Handle /bumpleaderboard command
   if (interaction.commandName === 'bumpleaderboard') {
     await executeBumpLeaderboard(interaction);
+  }
+
+  // Handle /modrank command
+  if (interaction.commandName === 'modrank') {
+    await executeModRankLeaderboard(interaction);
   }
 });
