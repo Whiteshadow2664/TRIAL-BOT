@@ -49,10 +49,10 @@ const getLeaderboard = async () => {
 
 // Handle bump detection
 const trackBump = async (message) => {
-    const bumpBotId = 'BOT_B_ID'; // Replace with Bot B's actual ID
+    const bumpBotId = '1338037787924107365'; // The bump bot's ID
     const bumpMessageSubstring = "Thx for bumping our Server! We will remind you in 2 hours!"; // Partial match
 
-    // Only track messages from Bot B (the bump bot)
+    // Only track messages from the specified bump bot
     if (message.author.id !== bumpBotId) return;
 
     // Check if the message contains the bump message substring and mentions a user
@@ -86,15 +86,4 @@ const execute = async (message) => {
     }
 };
 
-// Listen to new messages in the server
-const setupMessageListener = (client) => {
-    client.on('messageCreate', async (message) => {
-        // Ignore messages from the bot itself
-        if (message.author.bot) return;
-
-        // Track bumps from Bot B's messages
-        await trackBump(message);
-    });
-};
-
-module.exports = { trackBump, execute, setupMessageListener };
+module.exports = { trackBump, execute };
