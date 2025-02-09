@@ -28,9 +28,6 @@ async function createTable() {
 // Step 2: Call the function right after the pool setup
 createTable();  // Ensure table exists on startup
 
-const BUMP_BOT_ID = '735147814878969968';
-const BUMP_MESSAGE = 'Thx for bumping our Server! We will remind you in 2 hours!';
-
 /**
  * Keeps the database connection alive by running a query every 5 minutes.
  */
@@ -91,34 +88,6 @@ async function updateModRank(userId, username, guild) {
 }
 
 /**
- * Tracks bump points when a bump message is detected.
- */
-async function trackBumpingPoints(message) {
-    if (message.author.id !== BUMP_BOT_ID || !message.content.startsWith(BUMP_MESSAGE)) return;
-
-    const mentionedUser = message.mentions.users.first();
-    if (!mentionedUser) return;
-
-    try {
-        const client = await pool.connect();
-        try {
-            await client.query(`
-                INSERT INTO mod_rank (user_id, username, points, joined_at)
-                VALUES ($1, $2, 3, NOW())
-                ON CONFLICT (user_id) 
-                DO UPDATE SET 
-                    username = EXCLUDED.username,
-                    points = mod_rank.points + 3
-            `, [mentionedUser.id, mentionedUser.username]);
-        } finally {
-            client.release();
-        }
-    } catch (error) {
-        console.error('Error tracking bump points:', error);
-    }
-}
-
-/**
  * Displays the moderator leaderboard.
  */
 async function execute(message) {
@@ -159,4 +128,4 @@ async function execute(message) {
     }
 }
 
-module.exports = { updateModRank, trackBumpingPoints, execute };
+module.exports = { updateModRank, execute };
