@@ -105,7 +105,10 @@ setInterval(async () => {
 // Solution 2: Auto-reconnect on connection loss
 pool.on('error', (err) => {
     console.error('Database connection lost. Reconnecting...', err);
-    // You could reinitialize the pool here if necessary
+    // Re-initialize the pool if necessary or handle error based on requirements
 });
+
+// Solution 3: Ensure idle timeout and connection closure is handled correctly
+// This is already part of the pool configuration (idleTimeoutMillis: 30000) and no extra code is required.
 
 module.exports = { trackBumpingPoints, displayBumpLeaderboard };
