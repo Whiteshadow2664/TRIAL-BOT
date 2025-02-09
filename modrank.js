@@ -106,7 +106,7 @@ async function execute(message) {
                 return message.channel.send('No moderator activity recorded yet.');
             }
 
-            let leaderboard = '**Moderator Leaderboard**\n';
+            let leaderboard = '';  // Remove the text "Moderator Leaderboard"
             result.rows.forEach((row, index) => {
                 const avgPoints = (row.points / row.days_as_mod).toFixed(2);
                 leaderboard += `**#${index + 1}** | **${row.days_as_mod} Days** | **${row.username}** - **P:** ${row.points} | **AVG:** ${avgPoints}\n`;
