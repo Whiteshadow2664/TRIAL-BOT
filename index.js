@@ -30,7 +30,10 @@ const afkHandler = require('./afk.js');
 const purgeCommand = require('./purge.js');
 
 
-const bumpReminder = require('./bumpReminder'); // Adjust the path as necessary
+
+
+const bumpReminder = require('./bumpReminder.js');
+
 
 
 
@@ -161,6 +164,10 @@ client.on('messageCreate', async (message) => {
     await handleBanCommand(message);
 
 
+
+
+  // Call bumpReminder to track bumps
+  bumpReminder.execute(message);
 
 
 
