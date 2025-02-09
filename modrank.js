@@ -6,6 +6,23 @@ const pool = new Pool({
     ssl: {
         rejectUnauthorized: false, // Required for Neon DB
     },
+    idleTimeoutMillis: 30000, // ✅ Auto-close idle connections after 30 seconds
+});
+
+// ✅ Keep-Alive Query to prevent disconnection
+setInterval(async () => {
+    try {
+        const client = await pool.connect();
+        await client.query('SELECT 1'); 
+        client.release();
+    } catch (err) {
+        console.error('Error keeping database connection alive:', err);
+    }
+}, 300000); // Every 5 minutes
+
+// ✅ Auto-reconnect on connection loss
+pool.on('error', async (err) => {
+    console.error('Database connection lost. Reconnecting...', err);
 });
 
 // Ensure mod_rank table exists
@@ -63,7 +80,7 @@ module.exports.updateModRank = async (userId, username, guild, points = 1) => {
 
 // Function to track bumping points
 module.exports.trackBumpingPoints = async (message) => {
-    if (message.author.id !== '735147814878969968') return; // Only track messages from bump bot
+    if (message.author.id !== '1338037787924107365') return; // Only track messages from bump bot
 
     if (!message.content.includes('Thx for bumping our Server!')) return;
 
