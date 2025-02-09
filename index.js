@@ -30,6 +30,8 @@ const afkHandler = require('./afk.js');
 const purgeCommand = require('./purge.js');
 
 
+const bumpReminder = require('./bumpReminder'); // Adjust the path as necessary
+
 
 
 
