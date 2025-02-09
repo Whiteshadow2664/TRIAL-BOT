@@ -1,21 +1,27 @@
-const { Client, MessageEmbed } = require('discord.js');
+const { MessageEmbed } = require('discord.js');
 const { setTimeout } = require('timers');
 
 module.exports = {
   name: 'bumpReminder',
   execute(message) {
-    // Check if the message is from Disboard bot
-    if (message.author.id === '1338037787924107365' && message.content.includes('Thx for bumping our Server!')) {
-      // Find the user who bumped the server
-      const bumpedUser = message.mentions.users.first();
-      if (bumpedUser) {
-        // Thank the user immediately after the bump
-        sendThankYouMessage(bumpedUser, message.guild);
+    // Check if the message is from the Disboard bot and contains the "Bump done!" embed
+    if (message.author.id === '1338037787924107365' && message.embeds.length > 0) {
+      const embed = message.embeds[0];
+      
+      // Check if the embed contains the "Bump done!" text
+      if (embed.description && embed.description.includes('Bump done!')) {
+        // Find the user who triggered the bump, this is the user who sent the command
+        const bumpedUser = message.interaction ? message.interaction.user : message.author;
 
-        // Send a reminder message after 5 minutes
-        setTimeout(() => {
-          sendReminderMessage(bumpedUser, message.guild);
-        }, 5 * 60 * 1000); // 5 minutes in milliseconds
+        if (bumpedUser) {
+          // Send the thank you message immediately after the bump
+          sendThankYouMessage(bumpedUser, message.guild);
+
+          // Send a reminder message after 5 minutes
+          setTimeout(() => {
+            sendReminderMessage(bumpedUser, message.guild);
+          }, 5 * 60 * 1000); // 5 minutes in milliseconds
+        }
       }
     }
   }
