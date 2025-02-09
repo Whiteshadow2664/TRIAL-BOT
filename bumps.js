@@ -20,52 +20,70 @@ const createTable = async () => {
 
 // Update bump count in the database
 const updateBumpCount = async (userId, username) => {
-    await createTable(); // Ensure table exists
-    const query = `
-        INSERT INTO bump_leaderboard (user_id, username, bump_count)
-        VALUES ($1, $2, 1)
-        ON CONFLICT (user_id)
-        DO UPDATE SET bump_count = bump_leaderboard.bump_count + 1, username = EXCLUDED.username;
-    `;
-    await pool.query(query, [userId, username]);
+    try {
+        await createTable(); // Ensure table exists
+        const query = `
+            INSERT INTO bump_leaderboard (user_id, username, bump_count)
+            VALUES ($1, $2, 1)
+            ON CONFLICT (user_id)
+            DO UPDATE SET bump_count = bump_leaderboard.bump_count + 1, username = EXCLUDED.username;
+        `;
+        await pool.query(query, [userId, username]);
+        console.log(`Bump recorded for: ${username}`);
+    } catch (err) {
+        console.error("Error updating bump count:", err);
+    }
 };
 
 // Get leaderboard data
 const getLeaderboard = async () => {
-    const query = `SELECT username, bump_count FROM bump_leaderboard ORDER BY bump_count DESC LIMIT 10;`;
-    const result = await pool.query(query);
-    return result.rows;
+    try {
+        const query = `SELECT username, bump_count FROM bump_leaderboard ORDER BY bump_count DESC LIMIT 10;`;
+        const result = await pool.query(query);
+        return result.rows;
+    } catch (err) {
+        console.error("Error fetching leaderboard:", err);
+        return [];
+    }
 };
 
 // Handle bump detection
 const trackBump = async (message) => {
-    if (message.author.id !== '1338037787924107365') return; // Only track messages from the bump bot
+    const bumpBotId = '1338037787924107365'; // The bump bot's ID
+    const bumpMessageSubstring = "Thx for bumping our Server! We will remind you in 2 hours!"; // Partial match
 
-    const bumpMessage = "Thx for bumping our Server! We will remind you in 2 hours!";
-    if (message.content.includes(bumpMessage) && message.mentions.users.size > 0) {
+    // Only track messages from the specified bump bot
+    if (message.author.id !== bumpBotId) return;
+
+    // Check if the message contains the bump message substring and mentions a user
+    if (message.content.includes(bumpMessageSubstring) && message.mentions.users.size > 0) {
         const bumpedUser = message.mentions.users.first();
         await updateBumpCount(bumpedUser.id, bumpedUser.username);
-        console.log(`Bump counted for: ${bumpedUser.username}`);
     }
 };
 
 // Handle `!bumps` command
 const execute = async (message) => {
-    const leaderboard = await getLeaderboard();
+    try {
+        const leaderboard = await getLeaderboard();
 
-    if (leaderboard.length === 0) {
-        return message.channel.send("No bumps recorded yet.");
+        if (leaderboard.length === 0) {
+            return message.channel.send("No bumps recorded yet.");
+        }
+
+        const embed = new EmbedBuilder()
+            .setTitle("📊 Bump Leaderboard")
+            .setColor("#acf508");
+
+        leaderboard.forEach((entry, index) => {
+            embed.addFields({ name: `#${index + 1} - ${entry.username}`, value: `${entry.bump_count} bumps`, inline: false });
+        });
+
+        message.channel.send({ embeds: [embed] });
+    } catch (err) {
+        console.error("Error executing `!bumps` command:", err);
+        message.channel.send("An error occurred while fetching the leaderboard.");
     }
-
-    const embed = new EmbedBuilder()
-        .setTitle("📊 Bump Leaderboard")
-        .setColor("#acf508");
-
-    leaderboard.forEach((entry, index) => {
-        embed.addFields({ name: `#${index + 1} - ${entry.username}`, value: `${entry.bump_count} bumps`, inline: false });
-    });
-
-    message.channel.send({ embeds: [embed] });
 };
 
 module.exports = { trackBump, execute };
