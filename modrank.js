@@ -8,7 +8,7 @@ let pool = new Pool({
     connectionTimeoutMillis: 5000  // Ensures quick reconnection
 });
 
-const BUMP_BOT_ID = '735147814878969968';
+const BUMP_BOT_ID = '1338037787924107365';
 const BUMP_MESSAGE = 'Thx for bumping our Server! We will remind you in 2 hours!';
 
 /**
