@@ -16,8 +16,11 @@
     "express": "^4.21.2",
     "node-cron": "^3.0.3",
     "pg": "^8.11.1",
-    "better-sqlite3": "^8.5.1",
+    "sqlite3": "^5.1.6",
     "moment-timezone": "^0.5.34",
     "dotenv": "^10.0.0"
+  },
+  "engines": {
+    "node": ">=16"
   }
 }
