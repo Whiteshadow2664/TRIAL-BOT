@@ -1,5 +1,6 @@
 // Active Quiz Tracking
 const activeQuizzes = {};
+require("dotenv").config();
 const { Client, GatewayIntentBits, Partials, EmbedBuilder } = require('discord.js');
 const express = require('express');
 const cron = require('node-cron');
@@ -21,7 +22,7 @@ const ticket = require('./commands/ticket');
 const leaderboard = require('./leaderboard.js');
 const linkFilter = require('./linkFilter');
 const { handleSpamDetection } = require('./spamHandler');
-
+const bumpTracker = require("./bumpTracker");
 
 const updates = require('./commands/updates');
 const { handleBanCommand } = require('./banHandler');
@@ -142,6 +143,23 @@ client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
 
     await handleBanCommand(message);
+
+
+
+
+bumpTracker.handleBumpMessage(message);
+  }
+
+  if (message.content.toLowerCase() === "!bump") {
+    bumpTracker.showLeaderboard(message);
+  }
+
+
+
+
+
+
+
 
 
 
