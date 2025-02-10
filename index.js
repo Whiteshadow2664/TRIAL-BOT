@@ -154,7 +154,7 @@ client.on('messageCreate', async (message) => {
   modrank.handleMessage(message); // Handle message tracking
 
   if (message.content === '!modrank') modrank.execute(message); // Display leaderboard
-}
+
 
 
 
