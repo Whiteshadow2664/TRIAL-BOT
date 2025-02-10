@@ -1,3 +1,4 @@
+
 const { EmbedBuilder } = require('discord.js');
 const { Pool } = require('pg');
 
@@ -131,13 +132,13 @@ module.exports.execute = async (message) => {
             .setTitle('Moderator Leaderboard')
             .setColor('#acf508')
             .setDescription(
-            leaderboardData.rows
-                .map(
-                    (row, index) =>
-                        `**#${index + 1}** | **${row.days} Days** | **${row.username}** - **P:** ${row.points} | **AVG:** ${row.avg_points ? row.avg_points.toFixed(2) : '0.00'}`
-                )
-                .join('\n') + '\n\n**P** = Total points | **AVG** = Average points'
-        );
+                leaderboardData.rows
+                    .map(
+                        (row, index) =>
+                            `**#${index + 1}** | **${row.days} Days** | **${row.username}** - **P:** ${row.points} | **AVG:** ${row.avg_points ? row.avg_points.toFixed(2) : '0.00'}`
+                    )
+                    .join('\n')
+            );
 
         message.channel.send({ embeds: [leaderboardEmbed] });
     } catch (error) {
