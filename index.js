@@ -30,6 +30,19 @@ const handleWorksheet = require('./worksheet');
 const afkHandler = require('./afk.js');
 const purgeCommand = require('./purge.js');
 
+
+
+
+
+
+
+const modrank = require('./modrank');
+
+
+
+
+
+
 // Environment Variables
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 
@@ -134,6 +147,19 @@ client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
 
         await handleSpamDetection(message);
+
+
+
+
+  modrank.handleMessage(message); // Handle message tracking
+
+  if (message.content === '!modrank') modrank.execute(message); // Display leaderboard
+}
+
+
+
+
+
 
 
         await handleBanCommand(message);
