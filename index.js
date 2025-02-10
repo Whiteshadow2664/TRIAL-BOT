@@ -136,66 +136,52 @@ const modRank = require('./modrank.js');
 
 
 
+client.on("messageCreate", async (message) => {
+    if (message.author.bot) {
+        bumpTracker.handleBumpMessage(message);
+        return;
+    }
 
+    // Handle the bump leaderboard command
+    if (message.content.toLowerCase() === "!bump") {
+        bumpTracker.showLeaderboard(message);
+    }
 
-// Check if the message is badwords in any language
-client.on('messageCreate', async (message) => {
-    if (message.author.bot) return;
-
-    await handleBanCommand(message);
-
-
-
-
-bumpTracker.handleBumpMessage(message);
-  }
-
-  if (message.content.toLowerCase() === "!bump") {
-    bumpTracker.showLeaderboard(message);
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
+    // Handle moderator rank updates
     await modRank.updateModRank(message.author.id, message.author.username, message.guild);
 
-    if (message.content === '!modrank') {
+    if (message.content.toLowerCase() === "!modrank") {
         await modRank.execute(message);
     }
 
+    // Handle spam detection and banning
+    await handleSpamDetection(message);
+    await handleBanCommand(message);
 
+    // Leaderboard command
+    if (message.content.toLowerCase() === "!leaderboard") {
+        leaderboard.execute(message);
+    }
 
+    // Ticket system command
+    if (message.content.toLowerCase() === "!ticket") {
+        ticket.execute(message);
+    }
 
+    // Suggestion system command
+    if (message.content.toLowerCase().startsWith("!suggestion")) {
+        suggestion.execute(message);
+    }
 
-
-
-
-
-        await handleSpamDetection(message);
-await handleBanCommand(message);
-if (message.content.toLowerCase() === '!leaderboard') {
-   leaderboard.execute(message);
-}
-
-if (message.content.toLowerCase() === '!ticket') {
-  ticket.execute(message);
-}
-
-if(message.content.toLowerCase().startsWith('!suggestion')) {
-    suggestion.execute(message);
-}
-    // Handle bad words
+    // Handle bad words filtering
     handleBadWords(message);
 });
+
+
+
+
+
+
 
 // Commands and Event Handling
 client.on('messageCreate', async (message) => {
