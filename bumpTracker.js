@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require("discord.js");
-const Database = require("better-sqlite3");
-const db = new Database("./database.sqlite");
+const sqlite3 = require("sqlite3").verbose();
+const db = new sqlite3.Database("./bumpData.db");
 
 const BUMP_BOT_ID = "1338037787924107365"; // Bump Bot's ID
 const BUMP_MESSAGE = "Thx for bumping our Server! We will remind you in 2 hours!"; // Message to detect
