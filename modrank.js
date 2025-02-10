@@ -36,7 +36,7 @@ async function updateModRank(userId, username) {
 // Function to track bumping points (triggered by specific messages from the bot)
 async function trackBumpingPoints(message) {
   const bumpMessage = 'Thx for bumping our Server! We will remind you in 2 hours!';
-  const botId = '735147814878969968'; // The bot ID for detecting the bump
+  const botId = '1338037787924107365'; // The bot ID for detecting the bump
 
   if (message.author.id === botId && message.content.includes(bumpMessage)) {
     // Find the mentioned user in the bump message
