@@ -66,7 +66,7 @@ module.exports = {
   showLeaderboard: async (message) => {
     try {
       const client = await pool.connect();
-      const res = await client.query(`SELECT userId, username, count FROM bumps ORDER BY count DESC LIMIT 10`);
+      const res = await client.query(`SELECT username, count FROM bumps ORDER BY count DESC LIMIT 10`);
       client.release();
 
       if (res.rows.length === 0) {
@@ -74,7 +74,7 @@ module.exports = {
       }
 
       const leaderboard = res.rows
-        .map((entry, index) => `**${index + 1}.** <@${entry.userId}> - **${entry.count} bumps**`)
+        .map((entry, index) => `**${index + 1}.** ${entry.username} - **${entry.count} bumps**`)
         .join("\n");
 
       const embed = new EmbedBuilder()
