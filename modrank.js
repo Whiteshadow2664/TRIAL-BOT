@@ -64,7 +64,7 @@ module.exports.updateModRank = async (userId, username, guild, points = 1) => {
 
 // Function to track bumping points
 module.exports.trackBumpingPoints = async (message) => {
-    if (message.author.id !== '1338037787924107365') return; // Only track messages from bump bot
+    if (message.author.id !== '540129267728515072') return; // Only track messages from bump bot
 
     if (!message.content.includes('Thx for bumping our Server!')) return;
 
