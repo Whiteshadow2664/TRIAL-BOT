@@ -69,7 +69,7 @@ module.exports = {
 
       const embed = new EmbedBuilder()
         .setTitle("🏆 Bump Leaderboard")
-        .setColor("GOLD")
+        .setColor("#acf508")
         .setDescription(leaderboard)
         .setFooter({ text: "Keep bumping to climb the leaderboard!" });
 
