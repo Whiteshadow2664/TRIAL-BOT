@@ -1,4 +1,4 @@
-const { Client, MessageEmbed } = require('discord.js');
+const { Client, EmbedBuilder } = require('discord.js');
 const { Pool } = require('pg');
 
 // Set up database connection using the DATABASE_URL environment variable
@@ -64,18 +64,18 @@ async function getLeaderboard() {
 // Function to send the leaderboard embed
 async function sendLeaderboard(message) {
   const leaderboard = await getLeaderboard();
-  const embed = new MessageEmbed()
+  const embed = new EmbedBuilder()
     .setColor('#acf508')
     .setTitle('Moderator Leaderboard')
     .setDescription('Here is the leaderboard for moderators with the most points!');
   
   leaderboard.forEach((entry, index) => {
     const avgPoints = (entry.points / entry.days_as_mod).toFixed(2);
-    embed.addField(
-      `#${index + 1} | ${entry.days_as_mod} days`,
-      `${entry.username} - P: ${entry.points} | AVG: ${avgPoints}`,
-      false
-    );
+    embed.addFields({
+      name: `#${index + 1} | ${entry.days_as_mod} days`,
+      value: `${entry.username} - P: ${entry.points} | AVG: ${avgPoints}`,
+      inline: false
+    });
   });
 
   message.channel.send({ embeds: [embed] });
