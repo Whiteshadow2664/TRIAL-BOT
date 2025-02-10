@@ -30,6 +30,9 @@ async function updateModRank(userId, username) {
     ON CONFLICT (user_id) 
     DO UPDATE SET points = mod_rank.points + 1;
   `;
+  
+  console.log(`Executing query: ${query} with values: ${userId}, ${username}`);
+  
   await pool.query(query, [userId, username]);
 }
 
@@ -38,11 +41,18 @@ async function trackBumpingPoints(message) {
   const bumpMessage = 'Thx for bumping our Server! We will remind you in 2 hours!';
   const botId = '1338037787924107365'; // The bot ID for detecting the bump
 
+  console.log('Message Author ID:', message.author.id); // Log author ID to verify it's the right bot
+  console.log('Message Content:', message.content); // Log content to verify the bump message
+
   if (message.author.id === botId && message.content.includes(bumpMessage)) {
-    // Find the mentioned user in the bump message
+    console.log('Bump message detected!');
+    
     const mentionedUser = message.mentions.users.first();
-    if (mentionedUser) {
-      // Update the points for the user mentioned in the bump message
+    
+    if (!mentionedUser) {
+      console.log('No user mentioned in bump message.');
+    } else {
+      console.log('User mentioned in bump:', mentionedUser.username); // Log the mentioned user
       await updateModRank(mentionedUser.id, mentionedUser.username);
     }
   }
