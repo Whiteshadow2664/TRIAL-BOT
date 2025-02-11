@@ -1,3 +1,9 @@
+require("dotenv").config();
+const cron = require("node-cron");
+const { backupDatabase, uploadToDrive } = require("./backup.js");
+
+
+
 // Active Quiz Tracking
 const activeQuizzes = {};
 const { Client, GatewayIntentBits, Partials, EmbedBuilder } = require('discord.js');
