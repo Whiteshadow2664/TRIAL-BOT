@@ -1,6 +1,5 @@
 require("dotenv").config();
-
-const { backupDatabase, uploadToDrive } = require("./backup.js");
+require("./backup.js"); // ✅ Ensures the backup script runs
 
 
 
