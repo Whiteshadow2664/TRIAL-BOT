@@ -29,7 +29,16 @@ const dddGame = require('./dddGame');
 const handleWorksheet = require('./worksheet');
 const afkHandler = require('./afk.js');
 const purgeCommand = require('./purge.js');
-const bumpTracker = require('./bumpTracker'); // Ensure this file exists
+
+
+
+
+const bumpTracker = require('./bumpTracker');
+
+
+
+
+
 // Environment Variables
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 
@@ -148,6 +157,7 @@ client.on('messageCreate', async (message) => {
  
 
     // Track bumps (this should not stop execution)
+    await
     bumpTracker.handleBumpMessage(message);
 
     // Handle the bump leaderboard command
@@ -157,6 +167,11 @@ client.on('messageCreate', async (message) => {
     }
 
     // Other message handling logic...
+
+
+  
+
+
 
 
 
