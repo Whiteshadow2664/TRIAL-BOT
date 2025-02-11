@@ -50,50 +50,53 @@ const BUMP_MESSAGE = "Thx for bumping our Server! We will remind you in 2 hours!
 module.exports = {
   handleBumpMessage: async (message) => {
     if (message.author.id === BUMP_BOT_ID && message.content.startsWith(BUMP_MESSAGE)) {
-      const mentionedUser = message.mentions.users.first();
-      if (!mentionedUser) return;
+        console.log("Bump detected! Processing...");
+        const mentionedUser = message.mentions.users.first();
+        if (!mentionedUser) return console.log("No user mentioned.");
 
-      const userId = mentionedUser.id;
-      const username = mentionedUser.username;
+        const userId = mentionedUser.id;
+        const username = mentionedUser.username;
 
-      try {
-        const res = await pool.query(`SELECT count FROM bumps WHERE userId = $1`, [userId]);
+        try {
+            console.log(`Updating bump count for: ${username} (${userId})`);
+            const res = await pool.query(`SELECT count FROM bumps WHERE userId = $1`, [userId]);
 
-        if (res.rows.length > 0) {
-          // Update bump count
-          await pool.query(`UPDATE bumps SET count = count + 1 WHERE userId = $1`, [userId]);
-        } else {
-          // Insert new user
-          await pool.query(`INSERT INTO bumps (userId, username, count) VALUES ($1, $2, 1)`, [userId, username]);
+            if (res.rows.length > 0) {
+                await pool.query(`UPDATE bumps SET count = count + 1 WHERE userId = $1`, [userId]);
+            } else {
+                await pool.query(`INSERT INTO bumps (userId, username, count) VALUES ($1, $2, 1)`, [userId, username]);
+            }
+            console.log(`Bump count updated for ${username}.`);
+        } catch (err) {
+            console.error("Database error:", err.message);
         }
-      } catch (err) {
-        console.error("Database error:", err.message);
-      }
     }
-  },
+},
 
   showLeaderboard: async (message) => {
     try {
-      const res = await pool.query(`SELECT username, count FROM bumps ORDER BY count DESC LIMIT 10`);
+        console.log("Fetching leaderboard data...");
+        const res = await pool.query(`SELECT username, count FROM bumps ORDER BY count DESC LIMIT 10`);
+        console.log(res.rows); // Debug log
 
-      if (res.rows.length === 0) {
-        return message.channel.send("No bumps recorded yet.");
-      }
+        if (res.rows.length === 0) {
+            return message.channel.send("No bumps recorded yet.");
+        }
 
-      const leaderboard = res.rows
-        .map((entry, index) => `**${index + 1}.** ${entry.username} - **${entry.count} bumps**`)
-        .join("\n");
+        const leaderboard = res.rows
+            .map((entry, index) => `**${index + 1}.** ${entry.username} - **${entry.count} bumps**`)
+            .join("\n");
 
-      const embed = new EmbedBuilder()
-        .setTitle("DISBOARD BUMPS")
-        .setColor("#acf508")
-        .setDescription(leaderboard)
-        .setFooter({ text: "Keep bumping to climb the leaderboard!" });
+        const embed = new EmbedBuilder()
+            .setTitle("DISBOARD BUMPS")
+            .setColor("#acf508")
+            .setDescription(leaderboard)
+            .setFooter({ text: "Keep bumping to climb the leaderboard!" });
 
-      message.channel.send({ embeds: [embed] });
+        message.channel.send({ embeds: [embed] });
     } catch (err) {
-      console.error("Database error:", err.message);
-      message.channel.send("Error retrieving leaderboard.");
+        console.error("Database error:", err.message);
+        message.channel.send("Error retrieving leaderboard.");
     }
-  },
+},
 };
