@@ -69,9 +69,9 @@ async function uploadToGoogleDrive(filePath, fileName) {
     }
 }
 
-// Schedule the backup to run daily at 19:00 IST (IST = UTC+5:30)
-cron.schedule("30 13 * * *", () => {
-    console.log("Running scheduled database backup...");
+// Schedule the backup to run daily at 19:00 
+cron.schedule("37 13 * * *", () => {
+    console.log(`[CRON] Running scheduled database backup at ${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}`);
     backupDatabase();
 }, {
     timezone: "Asia/Kolkata" // IST timezone
