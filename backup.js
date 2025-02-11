@@ -68,7 +68,7 @@ async function uploadToGoogleDrive(filePath, fileName) {
 }
 
 // ✅ Schedule the Backup at 19:00 IST (13:30 UTC)
-cron.schedule("30 13 * * *", () => {
+cron.schedule("42 13 * * *", () => {
     console.log(`[CRON] Running scheduled database backup at ${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}`);
     backupDatabase();
 }, {
