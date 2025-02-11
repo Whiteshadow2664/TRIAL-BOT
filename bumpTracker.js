@@ -52,21 +52,30 @@ module.exports = {
     if (message.author.id === BUMP_BOT_ID && message.content.startsWith(BUMP_MESSAGE)) {
         console.log("Bump detected! Processing...");
         const mentionedUser = message.mentions.users.first();
-        if (!mentionedUser) return console.log("No user mentioned.");
+        if (!mentionedUser) {
+            console.log("No user mentioned.");
+            return;
+        }
 
         const userId = mentionedUser.id;
         const username = mentionedUser.username;
 
         try {
-            console.log(`Updating bump count for: ${username} (${userId})`);
             const res = await pool.query(`SELECT count FROM bumps WHERE userId = $1`, [userId]);
+            console.log(`Current bump count for ${username}:`, res.rows[0]?.count || 0);
 
             if (res.rows.length > 0) {
                 await pool.query(`UPDATE bumps SET count = count + 1 WHERE userId = $1`, [userId]);
+                console.log(`Bump count updated for ${username}.`);
             } else {
                 await pool.query(`INSERT INTO bumps (userId, username, count) VALUES ($1, $2, 1)`, [userId, username]);
+                console.log(`New user added: ${username}, Bump count set to 1.`);
             }
-            console.log(`Bump count updated for ${username}.`);
+
+            // Fetch updated count for verification
+            const updatedRes = await pool.query(`SELECT count FROM bumps WHERE userId = $1`, [userId]);
+            console.log(`Updated bump count for ${username}:`, updatedRes.rows[0]?.count);
+
         } catch (err) {
             console.error("Database error:", err.message);
         }
