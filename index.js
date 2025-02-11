@@ -1,5 +1,5 @@
 require("dotenv").config();
-const cron = require("node-cron");
+
 const { backupDatabase, uploadToDrive } = require("./backup.js");
 
 
