@@ -19,30 +19,7 @@ pool.on("error", async (err) => {
   }
 }); 
 
-// Keep the connection alive every 2 minutes
-setInterval(async () => {
-  try {
-    await pool.query("SELECT now()"); // Lightweight keep-alive query
-  } catch (err) {
-    console.error("Database keep-alive failed:", err);
-  }
-}, 120000); // 120000ms = 2 minutes 
-
-// Create the `bumps` table if it doesn't exist
-(async () => {
-  try {
-    await pool.query(`
-  CREATE TABLE IF NOT EXISTS bumps (
-    userId VARCHAR(50) PRIMARY KEY,
-    username VARCHAR(100),
-    count INTEGER DEFAULT 0
-  );
-`);
-    console.log("Bump table ensured.");
-  } catch (err) {
-    console.error("Failed to initialize database:", err.message);
-  }
-})(); 
+ 
 
 const BUMP_BOT_ID = "1338037787924107365";
 const BUMP_MESSAGE = "Thx for bumping our Server! We will remind you in 2 hours!"; 
