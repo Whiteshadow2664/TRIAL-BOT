@@ -1,52 +1,50 @@
-const { Client } = require("pg");
+const { exec } = require("child_process");
 const fs = require("fs");
 const { google } = require("googleapis");
-const { exec } = require("child_process");
 const cron = require("node-cron");
 require("dotenv").config();
 
-// PostgreSQL connection URL from Render
+// ✅ Load PostgreSQL connection from environment
 const DATABASE_URL = process.env.DATABASE_URL;
 
-// Google Drive authentication (from Render's environment variable)
+// ✅ Google Drive Authentication
 const auth = new google.auth.GoogleAuth({
     credentials: JSON.parse(process.env.GOOGLE_CREDENTIALS),
     scopes: ["https://www.googleapis.com/auth/drive.file"],
 });
-
 const drive = google.drive({ version: "v3", auth });
 
-// Folder ID of your Google Drive backup folder
-const GOOGLE_DRIVE_FOLDER_ID = "1jLl72PXtyet39jY3bTTKKLKSOi2w97KJ"; // Replace this with your actual folder ID
+// ✅ Google Drive Backup Folder ID
+const GOOGLE_DRIVE_FOLDER_ID = "1jLl72PXtyet39jY3bTTKKLKSOi2w97KJ"; // Replace with your actual folder ID
 
-// Function to back up the PostgreSQL database
+// ✅ Function to Backup PostgreSQL Database
 async function backupDatabase() {
-    console.log("Starting database backup...");
+    console.log(`[BACKUP] Starting database backup at ${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}...`);
 
-    // Backup file name with timestamp
+    // ✅ Generate backup filename
     const backupFileName = `backup_${new Date().toISOString().replace(/[:.]/g, "-")}.sql`;
-    const backupFilePath = `/tmp/${backupFileName}`; // Use /tmp for Render compatibility
+    const backupFilePath = `/tmp/${backupFileName}`; // ✅ /tmp is required for Render
 
-    // Run pg_dump command to export the database
-    exec(`pg_dump ${DATABASE_URL} -F c -f ${backupFilePath}`, async (error) => {
+    // ✅ Execute `pg_dump` to dump the PostgreSQL database
+    exec(`pg_dump --dbname=${DATABASE_URL} -F c -f ${backupFilePath}`, async (error) => {
         if (error) {
-            console.error("Database backup failed:", error);
+            console.error("❌ Database backup failed:", error);
             return;
         }
 
-        console.log(`Backup created: ${backupFilePath}`);
+        console.log(`✅ Backup created: ${backupFilePath}`);
 
-        // Upload the backup file to Google Drive
+        // ✅ Upload to Google Drive
         await uploadToGoogleDrive(backupFilePath, backupFileName);
     });
 }
 
-// Function to upload backup to Google Drive
+// ✅ Function to Upload Backup File to Google Drive
 async function uploadToGoogleDrive(filePath, fileName) {
     try {
         const fileMetadata = {
             name: fileName,
-            parents: [GOOGLE_DRIVE_FOLDER_ID], // Upload to a specific folder
+            parents: [GOOGLE_DRIVE_FOLDER_ID],
         };
         const media = {
             mimeType: "application/sql",
@@ -59,22 +57,23 @@ async function uploadToGoogleDrive(filePath, fileName) {
             fields: "id",
         });
 
-        console.log(`Backup uploaded to Google Drive: ${file.data.id}`);
+        console.log(`✅ Backup uploaded to Google Drive: ${file.data.id}`);
 
-        // Delete the local backup file after upload
+        // ✅ Delete local file after upload
         fs.unlinkSync(filePath);
-        console.log("Local backup file deleted.");
+        console.log("✅ Local backup file deleted.");
     } catch (error) {
-        console.error("Error uploading to Google Drive:", error);
+        console.error("❌ Error uploading to Google Drive:", error);
     }
 }
 
-// Schedule the backup to run daily at 19:00 
-cron.schedule("37 13 * * *", () => {
+// ✅ Schedule the Backup at 19:00 IST (13:30 UTC)
+cron.schedule("30 13 * * *", () => {
     console.log(`[CRON] Running scheduled database backup at ${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}`);
     backupDatabase();
 }, {
-    timezone: "Asia/Kolkata" // IST timezone
+    timezone: "Asia/Kolkata" // ✅ IST timezone
 });
-// Export the function (optional, in case you want to trigger it manually)
+
+// ✅ Export Function (for manual testing)
 module.exports = { backupDatabase };
