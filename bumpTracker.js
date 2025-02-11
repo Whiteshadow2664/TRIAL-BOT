@@ -3,7 +3,7 @@ const { Pool } = require("pg");
 
 // Set up PostgreSQL connection pool
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: process.env.DATA_BASE,
   ssl: { rejectUnauthorized: false },
   idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
 }); 
