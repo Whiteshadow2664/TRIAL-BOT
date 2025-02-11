@@ -32,12 +32,12 @@ setInterval(async () => {
 (async () => {
   try {
     await pool.query(`
-      CREATE TABLE IF NOT EXISTS bumps (
-        userId TEXT PRIMARY KEY,
-        username TEXT,
-        count INTEGER DEFAULT 0
-      )
-    `);
+  CREATE TABLE IF NOT EXISTS bumps (
+    userId VARCHAR(50) PRIMARY KEY,
+    username VARCHAR(100),
+    count INTEGER DEFAULT 0
+  );
+`);
     console.log("Bump table ensured.");
   } catch (err) {
     console.error("Failed to initialize database:", err.message);
