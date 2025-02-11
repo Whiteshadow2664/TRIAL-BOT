@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "backup": "node backup.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": ["discord", "bot", "quiz", "multilingual", "vocabulary"],
@@ -18,7 +19,10 @@
     "pg": "^8.11.1",
     "sqlite3": "^5.1.6",
     "moment-timezone": "^0.5.34",
-    "dotenv": "^10.0.0"
+    "dotenv": "^10.0.0",
+    "googleapis": "^121.0.0",
+    "fs": "0.0.1-security",
+    "child_process": "^1.0.2"
   },
   "engines": {
     "node": ">=16"
