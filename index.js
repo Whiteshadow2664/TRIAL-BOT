@@ -156,18 +156,14 @@ client.on('messageCreate', async (message) => {
 
  
 
-    // Track bumps (this should not stop execution)
-    await
-    bumpTracker.handleBumpMessage(message);
+    // Track bumps (this should not stop execution)
+    bumpTracker.handleBumpMessage(message); 
 
-    // Handle the bump leaderboard command
-    if (message.content.toLowerCase() === "!bump") {
-        bumpTracker.showLeaderboard(message);
-        return;
-    }
-
-    // Other message handling logic...
-
+    // Handle the bump leaderboard command
+    if (message.content.toLowerCase() === "!bump") {
+        bumpTracker.showLeaderboard(message);
+        return;
+    }
 
   
 
