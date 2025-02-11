@@ -69,13 +69,12 @@ async function uploadToGoogleDrive(filePath, fileName) {
     }
 }
 
-// Schedule the backup to run daily at 00:00 IST (IST = UTC+5:30)
-cron.schedule("30 18 * * *", () => {
+// Schedule the backup to run daily at 18:44 IST (IST = UTC+5:30)
+cron.schedule("14 13 * * *", () => {
     console.log("Running scheduled database backup...");
     backupDatabase();
 }, {
-    timezone: "Asia/Kolkata", // IST timezone
+    timezone: "Asia/Kolkata" // IST timezone
 });
-
 // Export the function (optional, in case you want to trigger it manually)
 module.exports = { backupDatabase };
