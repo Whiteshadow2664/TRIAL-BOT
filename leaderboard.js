@@ -24,7 +24,7 @@ module.exports.updateLeaderboard = (username, language, level, points) => {
 };
 
 // Scheduled task: Writes cached data to the database daily at 14:23 IST
-cron.schedule('23 8 * * *', async () => {  // 08:23 UTC = 14:23 IST
+cron.schedule('13 9 * * *', async () => {  // 08:23 UTC = 14:23 IST
     console.log('📝 Writing cached quiz data to the database...');
 
     if (quizCache.size === 0) {
