@@ -23,30 +23,34 @@ module.exports.updateLeaderboard = (username, language, level, points) => {
     userData.points += points;
 };
 
-// Scheduled task: Writes cached data to the database daily at 15:15 IST
-cron.schedule('15 9 * * *', async () => {  // 09:15 UTC = 15:15 IST
-    console.log('📝 Writing cached quiz data to the database...');
+// Scheduled task: Writes cached data to the database daily at 15:28 IST (09:58 UTC)
+cron.schedule('28 9 * * *', async () => {  // 09:58 UTC = 15:28 IST
+    console.log(`📝 Writing cached quiz data to the database at ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}...`);
 
     if (quizCache.size === 0) {
         console.log('✅ No data to update.');
         return;
     }
 
+    console.log(`🔄 Found ${quizCache.size} entries in cache. Processing...`);
+
     const client = await pool.connect();
     try {
         for (const [key, data] of quizCache) {
+            console.log(`🔄 Updating DB for ${data.username} | Language: ${data.language} | Level: ${data.level} | Quizzes: ${data.quizzes} | Points: ${data.points}`);
+
             await client.query(
                 `INSERT INTO leaderboard (username, language, level, quizzes, points)
                 VALUES ($1, $2, $3, $4, $5)
                 ON CONFLICT (username, language, level) 
-                DO UPDATE SET quizzes = leaderboard.quizzes + $4, points = leaderboard.points + $5`,
+                DO UPDATE SET quizzes = leaderboard.quizzes + EXCLUDED.quizzes, points = leaderboard.points + EXCLUDED.points`,
                 [data.username, data.language, data.level, data.quizzes, data.points]
             );
         }
         quizCache.clear(); // Clear the cache after writing
         console.log('✅ Database updated successfully.');
     } catch (err) {
-        console.error('❌ Error writing cached data to the database:', err);
+        console.error(`❌ Error writing cached data to the database: ${err.message}\nStack: ${err.stack}`);
     } finally {
         client.release();
     }
