@@ -49,8 +49,8 @@ module.exports.updateModRank = async (userId, username, guild) => {
     }
 };
 
-// ✅ Function to save cached XP to DB at 14:23 IST daily
-cron.schedule('13 9 * * *', async () => {
+// ✅ Function to save cached XP to DB at 15:15 IST daily
+cron.schedule('15 15 * * *', async () => {
     console.log('⏳ Writing XP data to database...');
 
     if (xpCache.size === 0) {
@@ -81,7 +81,7 @@ cron.schedule('13 9 * * *', async () => {
     } catch (err) {
         console.error('❌ Error saving XP data to database:', err);
     }
-}, { timezone: "Asia/Kolkata" }); // ✅ 14:23 IST
+}, { timezone: "Asia/Kolkata" }); // ✅ 15:15 IST
 
 // ✅ Function to fetch and display moderator leaderboard
 module.exports.execute = async (message) => {
