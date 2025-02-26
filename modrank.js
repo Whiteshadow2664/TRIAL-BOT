@@ -1,3 +1,4 @@
+
 const { EmbedBuilder } = require('discord.js');
 const { Pool } = require('pg');
 
