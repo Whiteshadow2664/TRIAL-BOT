@@ -17,10 +17,9 @@ async function ensureTableExists() {
                 username TEXT NOT NULL,
                 language TEXT NOT NULL,
                 level TEXT NOT NULL,
-                quizzes INT DEFAULT 0,
-                points INT DEFAULT 0,
-                UNIQUE (username, language, level)
-            );
+                quizzes INTEGER NOT NULL,
+                points INTEGER NOT NULL
+            )
         `);
         console.log("✅ Leaderboard table verified/created.");
     } catch (err) {
