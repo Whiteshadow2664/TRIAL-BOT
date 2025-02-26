@@ -1,8 +1,3 @@
-require("dotenv").config();
-require("./backup.js"); // ✅ Ensures the backup script runs
-
-
-
 // Active Quiz Tracking
 const activeQuizzes = {};
 const { Client, GatewayIntentBits, Partials, EmbedBuilder } = require('discord.js');
@@ -34,15 +29,7 @@ const dddGame = require('./dddGame');
 const handleWorksheet = require('./worksheet');
 const afkHandler = require('./afk.js');
 const purgeCommand = require('./purge.js');
-
-
-
-
-const bumpTracker = require('./bumpTracker');
-
-
-
-
+const antiInvite = require("./antiInvite");
 
 // Environment Variables
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
@@ -156,28 +143,7 @@ client.on('messageCreate', async (message) => {
     }
 
         await handleBanCommand(message);
-
-
-
- 
-
-    // Track bumps (this should not stop execution)
-    bumpTracker.handleBumpMessage(message); 
-
-    // Handle the bump leaderboard command
-    if (message.content.toLowerCase() === "!bump") {
-        bumpTracker.showLeaderboard(message);
-        return;
-    }
-
-  
-
-
-
-
-
-
-
+   
 if (message.content.toLowerCase() === '!leaderboard') {
    leaderboard.execute(message);
 }
@@ -220,11 +186,7 @@ if(message.content.toLowerCase().startsWith('!suggestion')) {
 }
     // Handle bad words
     handleBadWords(message);
-});
 
-// Commands and Event Handling
-client.on('messageCreate', async (message) => {
-    if (message.author.bot) return;
 
 // Commands for Announcement
     if (message.content.toLowerCase() === '!announcement') {
@@ -453,6 +415,7 @@ delete activeQuizzes[message.author.id];
 client.once('ready', () => {
     console.log(`${client.user.tag} is online!`);
     linkFilter(client);
+    antiInvite(client);
     // Start the status update cycle
     setInterval(() => updateBotStatus(client), 10000); // Update every 10 seconds
 });
