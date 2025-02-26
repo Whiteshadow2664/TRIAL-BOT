@@ -7,24 +7,50 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false },
 });
 
+// Ensure leaderboard table exists
+async function ensureTableExists() {
+    const client = await pool.connect();
+    try {
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS leaderboard (
+                id SERIAL PRIMARY KEY,
+                username TEXT NOT NULL,
+                language TEXT NOT NULL,
+                level TEXT NOT NULL,
+                quizzes INT DEFAULT 0,
+                points INT DEFAULT 0,
+                UNIQUE (username, language, level)
+            );
+        `);
+        console.log("✅ Leaderboard table verified/created.");
+    } catch (err) {
+        console.error("❌ Error ensuring leaderboard table exists:", err);
+    } finally {
+        client.release();
+    }
+}
+
+// Call table creation on startup
+ensureTableExists();
+
 // In-memory cache for quiz scores
 const quizCache = new Map();
 
 // Store quiz results in memory instead of writing to DB immediately
 module.exports.updateLeaderboard = (username, language, level, points) => {
     const key = `${username}-${language}-${level}`;
-    
+
     if (!quizCache.has(key)) {
         quizCache.set(key, { username, language, level, quizzes: 0, points: 0 });
     }
-    
+
     const userData = quizCache.get(key);
     userData.quizzes += 1;
     userData.points += points;
 };
 
 // Scheduled task: Writes cached data to the database daily at 15:28 IST (09:58 UTC)
-cron.schedule('48 15 * * *', async () => {  // 09:58 UTC = 15:28 IST
+cron.schedule('00 16 * * *', async () => {  // 09:58 UTC = 15:28 IST
     console.log(`📝 Writing cached quiz data to the database at ${new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })}...`);
 
     if (quizCache.size === 0) {
@@ -56,7 +82,6 @@ cron.schedule('48 15 * * *', async () => {  // 09:58 UTC = 15:28 IST
     }
 }, { timezone: "Asia/Kolkata" });
 
-// Function to fetch and display the leaderboard
 module.exports.execute = async (message) => {
     try {
         const client = await pool.connect();
