@@ -144,17 +144,7 @@ client.on('messageCreate', async (message) => {
 
         await handleSpamDetection(message);
  
-    await modRank.updateModRank(message.author.id, message.author.username, message.guild);
-
-    if (message.content === '!modrank') {
-        await modRank.execute(message);
-    }
-
-        await handleBanCommand(message);
-   
-if (message.content.toLowerCase() === '!leaderboard') {
-   leaderboard.execute(message);
-}
+    
 
 if (message.content.toLowerCase() === "!ws") {
     handleWorksheet(message, client);
