@@ -31,6 +31,14 @@ const afkHandler = require('./afk.js');
 const purgeCommand = require('./purge.js');
 const antiInvite = require("./antiInvite");
 
+
+
+
+const nativeRoles = require('./nativeRoles');
+
+
+
+
 // Environment Variables
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 
@@ -416,6 +424,7 @@ client.once('ready', () => {
     console.log(`${client.user.tag} is online!`);
     linkFilter(client);
     antiInvite(client);
+    nativeRoles(client);
     // Start the status update cycle
     setInterval(() => updateBotStatus(client), 10000); // Update every 10 seconds
 });
