@@ -23,6 +23,12 @@ module.exports = {
         return message.channel.send(`You already have an open ticket: ${existingTicket}.`);
       }
 
+      // Get the Moderator role
+      const modRole = message.guild.roles.cache.find(role => role.name === 'Moderator');
+      if (!modRole) {
+        return message.channel.send('Moderator role not found. Please ensure it exists.');
+      }
+
       // Create the ticket channel inside the "Channels" category
       const ticketChannel = await message.guild.channels.create({
         name: `ticket-${message.author.username.toLowerCase()}`,
@@ -53,14 +59,17 @@ module.exports = {
               PermissionFlagsBits.ManageChannels,
             ],
           },
+          {
+            id: modRole.id, // Allow Moderators
+            allow: [
+              PermissionFlagsBits.ViewChannel,
+              PermissionFlagsBits.SendMessages,
+              PermissionFlagsBits.ReadMessageHistory,
+              PermissionFlagsBits.ManageMessages,
+            ],
+          },
         ],
       });
-
-      // Get the Moderator role
-      const modRole = message.guild.roles.cache.find(role => role.name === 'Moderator');
-      if (!modRole) {
-        return message.channel.send('Moderator role not found. Please ensure it exists.');
-      }
 
       // Create the ticket embed
       const embed = new EmbedBuilder()
