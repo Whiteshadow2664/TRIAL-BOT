@@ -7,6 +7,20 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false },
 });
 
+
+
+const languageColors = {
+    russian: '#7907ff',
+    german: '#f4ed09',
+    french: '#09ebf6',
+    default: '#acf508'
+};
+
+
+
+
+
+
 // Ensure leaderboard table exists
 async function ensureTableExists() {
     const client = await pool.connect();
@@ -166,7 +180,7 @@ module.exports.execute = async (message) => {
 
         const leaderboardEmbed = new EmbedBuilder()
             .setTitle(`${selectedLanguage.charAt(0).toUpperCase() + selectedLanguage.slice(1)} Level ${selectedLevel} Leaderboard`)
-            .setColor('#FFD700')
+            .setColor(languageColors[selectedLanguage] || languageColors.default) // Dynamic color selection
             .setDescription(
                 leaderboardData.rows
                     .map(
