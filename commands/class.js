@@ -20,10 +20,7 @@ module.exports = {
             const embed = new EmbedBuilder()
                 .setTitle('📅 Upcoming Events')
                 .setColor('#acf508')
-                .setDescription(
-                    'Stay informed about our upcoming sessions and events!\n\n' +
-                    ':calendar: Want to add our sessions schedule to your Google Calendar? Click on the event link and add it manually.'
-                );
+                .setDescription('Stay informed about our upcoming sessions and events!');
 
             for (const event of events.values()) {
                 const startTime = new Date(event.scheduledStartTimestamp).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
@@ -34,10 +31,11 @@ module.exports = {
                 const googleCalendarLink = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.name)}&dates=${startTime}/${endTime}&details=${encodeURIComponent(event.description || 'No details provided')}&location=${encodeURIComponent(event.location || '')}`;
 
                 const organizer = event.creator ? `<@${event.creatorId}>` : 'Unknown';
+                const eventDescription = event.description ? event.description : '*No description provided.*';
 
                 embed.addFields({
                     name: event.name,
-                    value: `📅 **Date:** <t:${Math.floor(event.scheduledStartTimestamp / 1000)}:F>\n👤 **Organizer:** ${organizer}\n🔗 [Event Link](${event.url})\n🗓️ [Add to Google Calendar](${googleCalendarLink})`,
+                    value: `📅 **Date:** <t:${Math.floor(event.scheduledStartTimestamp / 1000)}:F>\n👤 **Organizer:** ${organizer}\n📝 **Description:** ${eventDescription}\n🔗 [Event Link](${event.url})\n🗓️ [Add to Google Calendar](${googleCalendarLink})`,
                     inline: false
                 });
             }
