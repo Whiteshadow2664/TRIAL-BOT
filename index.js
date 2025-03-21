@@ -33,7 +33,7 @@ const antiInvite = require("./antiInvite");
 
 
 const eventCommand = require('./event');
-const { handleInteraction } = require('./interactionHandler');
+const { handleInteraction } = require('./InteractionHandler');
 const cefr = require('./cefr');
 
 
