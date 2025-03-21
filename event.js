@@ -1,76 +1,53 @@
-const { SlashCommandBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
 
 module.exports = {
-    name: "event",
-    description: "Creates an event with user-defined details.",
+    name: 'event',
+    description: 'Create an event by filling out a form.',
     async execute(message) {
-        // Create Modal (Form)
+        // Check if the command was used in a guild
+        if (!message.guild) {
+            return message.reply('This command can only be used in a server.');
+        }
+
+        // Create a modal (pop-up form)
         const modal = new ModalBuilder()
             .setCustomId('eventForm')
-            .setTitle('📅 Event Creation Form');
+            .setTitle('Create an Event');
 
-        // Form Fields
-        const eventName = new TextInputBuilder()
+        // Event Name Input
+        const eventNameInput = new TextInputBuilder()
             .setCustomId('eventName')
             .setLabel('Event Name')
             .setStyle(TextInputStyle.Short)
             .setRequired(true);
 
-        const eventDate = new TextInputBuilder()
+        // Event Date Input
+        const eventDateInput = new TextInputBuilder()
             .setCustomId('eventDate')
-            .setLabel('Event Date (YYYY-MM-DD)')
+            .setLabel('Event Date & Time (e.g., 25th March, 5 PM IST)')
             .setStyle(TextInputStyle.Short)
             .setRequired(true);
 
-        const eventTime = new TextInputBuilder()
-            .setCustomId('eventTime')
-            .setLabel('Event Time (HH:MM AM/PM)')
-            .setStyle(TextInputStyle.Short)
-            .setRequired(true);
-
-        const eventDescription = new TextInputBuilder()
-            .setCustomId('eventDescription')
-            .setLabel('Short Event Description')
+        // Event Description Input
+        const eventDescInput = new TextInputBuilder()
+            .setCustomId('eventDesc')
+            .setLabel('Event Description')
             .setStyle(TextInputStyle.Paragraph)
             .setRequired(true);
 
-        // Add Fields to Modal
-        const row1 = new ActionRowBuilder().addComponents(eventName);
-        const row2 = new ActionRowBuilder().addComponents(eventDate);
-        const row3 = new ActionRowBuilder().addComponents(eventTime);
-        const row4 = new ActionRowBuilder().addComponents(eventDescription);
+        // Create Action Rows
+        const firstRow = new ActionRowBuilder().addComponents(eventNameInput);
+        const secondRow = new ActionRowBuilder().addComponents(eventDateInput);
+        const thirdRow = new ActionRowBuilder().addComponents(eventDescInput);
 
-        modal.addComponents(row1, row2, row3, row4);
+        // Add components to the modal
+        modal.addComponents(firstRow, secondRow, thirdRow);
 
-        // Show the form to the user
-        await message.reply({ content: "📌 Please fill out the event form.", ephemeral: true });
-        await message.member.send({ content: "Fill out the event details below:", components: [modal] })
-            .catch(() => message.channel.send("I couldn't DM you. Make sure your DMs are open!"));
-    }
-};
-
-// Event Listener for Modal Submission
-module.exports.handleModalSubmit = async (interaction) => {
-    if (interaction.customId === 'eventForm') {
-        const eventName = interaction.fields.getTextInputValue('eventName');
-        const eventDate = interaction.fields.getTextInputValue('eventDate');
-        const eventTime = interaction.fields.getTextInputValue('eventTime');
-        const eventDescription = interaction.fields.getTextInputValue('eventDescription');
-
-        // Create an embed for the event announcement
-        const embed = new EmbedBuilder()
-            .setTitle(`📅 Upcoming Event: ${eventName}`)
-            .setDescription(`**📝 Description:** ${eventDescription}`)
-            .addFields(
-                { name: "📅 Date", value: eventDate, inline: true },
-                { name: "🕒 Time", value: eventTime, inline: true }
-            )
-            .setColor("#0099ff")
-            .setFooter({ text: "Event Created Successfully!" });
-
-        // Announce the event in the channel
-        await interaction.channel.send({ embeds: [embed] });
-
-        await interaction.reply({ content: "✅ Event created successfully!", ephemeral: true });
-    }
+        try {
+            await message.author.send({ content: 'Please fill out the event form:', components: [modal] });
+        } catch (error) {
+            console.error('Error sending modal:', error);
+            return message.reply('I couldn’t send you the event form. Please check your DMs.');
+        }
+    },
 };
