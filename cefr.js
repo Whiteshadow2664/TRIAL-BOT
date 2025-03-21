@@ -11,7 +11,7 @@ module.exports = {
                 "It is widely accepted by educational institutions, employers, and certification bodies worldwide, providing a **structured framework** for language learning and assessment."
             )
             .setColor("#ACF508")
-            .setThumbnail("https://media.discordapp.net/attachments/1278983067205373964/1352593554580443167/20250321_161322.png?ex=67de9469&is=67dd42e9&hm=ec8f0058f3e4e84e5ffd6de124cd1d9424a4039a0462dafacd2164247e52a448&") // CEFR Chart Thumbnail
+            .setThumbnail("https://media.discordapp.net/attachments/1278983067205373964/1352596267422715975/20250321_162115.png?ex=67de96f0&is=67dd4570&hm=7e732f38d8b8647aedfc6e71f1a1323f3a93a5f128ded764bf04c45b2a4e47dd&") // CEFR Chart Thumbnail
             .addFields(
                 { name: "📌 **Why CEFR Matters**", value: "CEFR **classifies language skills** into six levels, helping learners, educators, and employers to assess and compare language proficiency objectively." },
                 { name: "🔰 **A1 - Beginner**", value: "• Understands and uses basic everyday expressions.\n• Can introduce themselves and answer simple questions.\n• Can communicate if the other person speaks slowly and clearly." },
