@@ -33,7 +33,7 @@ const antiInvite = require("./antiInvite");
 
 
 
-
+const eventCommand = require('./event');
 const cefr = require('./cefr');
 
 
@@ -162,7 +162,7 @@ if (message.content.toLowerCase() === '!leaderboard') {
 
 
 
-const eventCommand = require('./commands/event');
+
 
 if (message.content.toLowerCase() === '!event') {
     eventCommand.execute(message);
