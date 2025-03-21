@@ -34,6 +34,7 @@ const antiInvite = require("./antiInvite");
 
 
 const cefr = require('./cefr');
+const classCommand = require('./commands/class');
 
 
 
@@ -174,7 +175,9 @@ if (message.content.toLowerCase() === '!leaderboard') {
 
 
 
-
+if (message.content.toLowerCase() === '!class') {
+    classCommand.execute(message);
+}
 if (message.content.toLowerCase() === '!cefr') {
     cefr.execute(message);
 }
