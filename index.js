@@ -32,8 +32,8 @@ const purgeCommand = require('./purge.js');
 const antiInvite = require("./antiInvite");
 
 
-
 const eventCommand = require('./event');
+const { handleInteraction } = require('./interactionHandler');
 const cefr = require('./cefr');
 
 
@@ -164,9 +164,14 @@ if (message.content.toLowerCase() === '!leaderboard') {
 
 
 
+
+
 if (message.content.toLowerCase() === '!event') {
-    eventCommand.execute(message);
-}
+        eventCommand.execute(message);
+    }
+
+
+
 
 
 
@@ -448,6 +453,14 @@ delete activeQuizzes[message.author.id];
         resources.execute(message);
     }
 }); 
+
+
+client.on('interactionCreate', async interaction => {
+    await handleInteraction(interaction);
+});
+
+
+
 
 client.once('ready', () => {
     console.log(`${client.user.tag} is online!`);
