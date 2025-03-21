@@ -31,6 +31,14 @@ const afkHandler = require('./afk.js');
 const purgeCommand = require('./purge.js');
 const antiInvite = require("./antiInvite");
 
+
+
+
+const cefr = require('./cefr');
+
+
+
+
 // Environment Variables
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 
@@ -134,6 +142,7 @@ Object.keys(wordOfTheDayTimes).forEach((language) => {
 client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
 
+
         await handleSpamDetection(message);
  
     await modRank.updateModRank(message.author.id, message.author.username, message.guild);
@@ -147,6 +156,23 @@ client.on('messageCreate', async (message) => {
 if (message.content.toLowerCase() === '!leaderboard') {
    leaderboard.execute(message);
 }
+
+
+
+
+
+
+
+if (message.content.toLowerCase() === '!cefr') {
+    cefr.execute(message);
+}
+
+
+
+
+
+
+
 
 if (message.content.toLowerCase() === "!ws") {
     handleWorksheet(message, client);
