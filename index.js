@@ -18,10 +18,10 @@ const announcement = require('./commands/announcement');
 const { handleBadWords } = require('./badWords');
 const suggestion = require('./commands/suggestion');
 const ticket = require('./commands/ticket');
-
+const leaderboard = require('./leaderboard.js');
 const linkFilter = require('./linkFilter');
 const { handleSpamDetection } = require('./spamHandler');
-
+const modRank = require('./modrank.js');
 const updates = require('./commands/updates');
 const { handleBanCommand } = require('./banHandler');
 const { updateBotStatus } = require('./statusUpdater');
@@ -30,14 +30,6 @@ const handleWorksheet = require('./worksheet');
 const afkHandler = require('./afk.js');
 const purgeCommand = require('./purge.js');
 const antiInvite = require("./antiInvite");
-
-
-
-
-const nativeRoles = require('./nativeRoles');
-
-
-
 
 // Environment Variables
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
@@ -144,7 +136,17 @@ client.on('messageCreate', async (message) => {
 
         await handleSpamDetection(message);
  
-    
+    await modRank.updateModRank(message.author.id, message.author.username, message.guild);
+
+    if (message.content === '!modrank') {
+        await modRank.execute(message);
+    }
+
+        await handleBanCommand(message);
+   
+if (message.content.toLowerCase() === '!leaderboard') {
+   leaderboard.execute(message);
+}
 
 if (message.content.toLowerCase() === "!ws") {
     handleWorksheet(message, client);
@@ -414,7 +416,6 @@ client.once('ready', () => {
     console.log(`${client.user.tag} is online!`);
     linkFilter(client);
     antiInvite(client);
-    nativeRoles(client);
     // Start the status update cycle
     setInterval(() => updateBotStatus(client), 10000); // Update every 10 seconds
 });
