@@ -32,8 +32,7 @@ const purgeCommand = require('./purge.js');
 const antiInvite = require("./antiInvite");
 
 
-const eventCommand = require('./event');
-const { handleInteraction } = require('./InteractionHandler');
+
 const cefr = require('./cefr');
 
 
@@ -166,9 +165,6 @@ if (message.content.toLowerCase() === '!leaderboard') {
 
 
 
-if (message.content.toLowerCase() === '!event') {
-        eventCommand.execute(message);
-    }
 
 
 
