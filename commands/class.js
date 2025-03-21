@@ -25,7 +25,7 @@ module.exports = {
                     ':calendar: Want to add our sessions schedule to your Google Calendar? Click on the event link and add it manually.'
                 );
 
-            events.forEach(event => {
+            for (const event of events.values()) {
                 const startTime = new Date(event.scheduledStartTimestamp).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
                 const endTime = event.scheduledEndTimestamp
                     ? new Date(event.scheduledEndTimestamp).toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z'
@@ -33,12 +33,14 @@ module.exports = {
 
                 const googleCalendarLink = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.name)}&dates=${startTime}/${endTime}&details=${encodeURIComponent(event.description || 'No details provided')}&location=${encodeURIComponent(event.location || '')}`;
 
+                const organizer = event.creator ? `<@${event.creatorId}>` : 'Unknown';
+
                 embed.addFields({
                     name: event.name,
-                    value: `📅 **Date:** <t:${Math.floor(event.scheduledStartTimestamp / 1000)}:F>\n🔗 [Event Link](${event.url})\n🗓️ [Add to Google Calendar](${googleCalendarLink})`,
+                    value: `📅 **Date:** <t:${Math.floor(event.scheduledStartTimestamp / 1000)}:F>\n👤 **Organizer:** ${organizer}\n🔗 [Event Link](${event.url})\n🗓️ [Add to Google Calendar](${googleCalendarLink})`,
                     inline: false
                 });
-            });
+            }
 
             await message.channel.send({ embeds: [embed] });
         } catch (error) {
