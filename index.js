@@ -162,6 +162,17 @@ if (message.content.toLowerCase() === '!leaderboard') {
 
 
 
+const eventCommand = require('./commands/event');
+
+if (message.content.toLowerCase() === '!event') {
+    eventCommand.execute(message);
+}
+
+
+
+
+
+
 
 if (message.content.toLowerCase() === '!cefr') {
     cefr.execute(message);
