@@ -8,7 +8,7 @@ const pool = new Pool({
     idleTimeoutMillis: 30000, // ✅ Auto-close idle connections
 });
 
-// ✅ In-memory bump cache (user_id -> { username, bumps })
+// ✅ In-memory bump cache (userid -> { username, count })
 const bumpCache = new Map();
 
 // ✅ Ensure bumps table exists
@@ -16,7 +16,7 @@ const bumpCache = new Map();
     try {
         await pool.query(`
             CREATE TABLE IF NOT EXISTS bumps (
-                user_id TEXT PRIMARY KEY,
+                userid TEXT PRIMARY KEY,
                 username TEXT NOT NULL,
                 count INTEGER NOT NULL DEFAULT 0
             );
@@ -49,7 +49,7 @@ module.exports.trackBump = async (message) => {
 };
 
 // ✅ Function to save cached bumps to DB at 22:30 IST daily
-cron.schedule("46 22 * * *", async () => {
+cron.schedule("14 23 * * *", async () => {
     console.log("⏳ Uploading bump data to database...");
 
     if (bumpCache.size === 0) {
@@ -62,13 +62,13 @@ cron.schedule("46 22 * * *", async () => {
 
         for (const [userId, data] of bumpCache.entries()) {
             const { username, count } = data;
-            const result = await client.query(`SELECT * FROM bumps WHERE user_id = $1`, [userId]);
+            const result = await client.query(`SELECT * FROM bumps WHERE userid = $1`, [userId]);
 
             if (result.rows.length > 0) {
-                await client.query(`UPDATE bumps SET count = count + $1 WHERE user_id = $2`, [count, userId]);
+                await client.query(`UPDATE bumps SET count = count + $1 WHERE userid = $2`, [count, userId]);
             } else {
                 await client.query(
-                    `INSERT INTO bumps (user_id, username, count) VALUES ($1, $2, $3)`,
+                    `INSERT INTO bumps (userid, username, count) VALUES ($1, $2, $3)`,
                     [userId, username, count]
                 );
             }
