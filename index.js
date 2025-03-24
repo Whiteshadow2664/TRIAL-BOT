@@ -33,7 +33,7 @@ const antiInvite = require("./antiInvite");
 
 
 
-const bump = require("./bump.js");
+const bump = require("./bumps.js");
 
 const cefr = require('./cefr');
 const classCommand = require('./commands/class');
