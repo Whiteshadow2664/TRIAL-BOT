@@ -34,7 +34,7 @@ const antiInvite = require("./antiInvite");
 const cefr = require('./cefr');
 const classCommand = require('./commands/class');
 const studyTips = require('./commands/studytips');
-
+const examCommand = require('./commands/exam.js');
 
 
 // Environment Variables
@@ -157,7 +157,9 @@ client.on('messageCreate', async (message) => {
 
 
 
-
+if (message.content.toLowerCase() === '!exam') {
+    examCommand.execute(message);
+}
 
 
 if (message.content.toLowerCase() === '!tips') {
