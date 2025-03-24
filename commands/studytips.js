@@ -2,120 +2,100 @@ const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
     name: "tips",
-    description: "Provides comprehensive study tips for learning a new language effectively.",
+    description: "Provides structured and effective study strategies for mastering a new language.",
     async execute(message) {
         const pages = [
-            // Page 1: Introduction & Resources
+            // Page 1: Introduction
             new EmbedBuilder()
-                .setTitle("🌍 Mastering a Language: Study Tips & Resources")
+                .setTitle("🌍 Mastering a Language: Essential Study Tips")
                 .setDescription(
-                    "**Want to learn a language effectively?** Here’s a complete guide covering:\n" +
-                    "📌 **How to Study Efficiently**\n" +
-                    "📌 **Best Books & Apps**\n" +
+                    "**Looking to improve your language learning approach?**\n\n" +
+                    "This guide covers:\n" +
+                    "📌 **Efficient Study Techniques**\n" +
                     "📌 **Speaking & Listening Strategies**\n" +
                     "📌 **Reading & Writing Methods**\n" +
-                    "📌 **Memory Techniques & Note-taking**\n\n" +
-                    "➡️ **Resources**: [Click here](https://bit.ly/Iingualounge)"
+                    "📌 **Memory Retention Techniques**\n" +
+                    "📌 **How to Stay Motivated**"
                 )
                 .setColor("#ACF508")
-                .setThumbnail("https://media.discordapp.net/attachments/1278983067205373964/1352596267422715975/20250321_162115.png")
-                .setFooter({ text: "Page 1/7 | Use ▶️ to navigate" }),
+                .setFooter({ text: "Page 1/6 | Use ▶️ to navigate" }),
 
-            // Page 2: How to Study Efficiently
+            // Page 2: Effective Study Techniques
             new EmbedBuilder()
-                .setTitle("📚 How to Study Efficiently")
+                .setTitle("📚 Effective Study Techniques")
                 .setDescription(
                     "**1. Set SMART Goals:**\n" +
-                    "   • Be Specific: 'Learn 20 new words daily' instead of 'Get better at French'.\n" +
-                    "   • Make it Measurable & Achievable.\n" +
-                    "   • Track progress weekly.\n\n" +
-                    "**2. Use the 80/20 Rule:**\n" +
-                    "   • Focus on the **most common 20% of words** that appear **80% of the time** in conversations.\n\n" +
-                    "**3. Immersion Learning:**\n" +
-                    "   • Switch phone, apps, and media to the target language.\n" +
-                    "   • Surround yourself with content like podcasts, YouTube, and books."
+                    "   • Be specific: 'Learn 20 words daily' instead of 'Improve vocabulary'.\n" +
+                    "   • Track progress weekly for measurable results.\n\n" +
+                    "**2. Focus on Core Vocabulary:**\n" +
+                    "   • Learn the most frequently used words and phrases first.\n\n" +
+                    "**3. Immerse Yourself in the Language:**\n" +
+                    "   • Change your surroundings—think, write, and speak in the target language.\n" +
+                    "   • Surround yourself with books, music, and conversations in that language."
                 )
                 .setColor("#ACF508")
-                .setFooter({ text: "Page 2/7 | Use ◀️▶️ to navigate" }),
+                .setFooter({ text: "Page 2/6 | Use ◀️▶️ to navigate" }),
 
-            // Page 3: Best Books & Apps
-            new EmbedBuilder()
-                .setTitle("📖 Best Books & Apps")
-                .setDescription(
-                    "**Top Apps:**\n" +
-                    "📌 **Anki** – Smart flashcards with spaced repetition.\n" +
-                    "📌 **LingQ** – Great for reading & listening practice.\n" +
-                    "📌 **HelloTalk** – Chat with native speakers.\n" +
-                    "📌 **Language Reactor** – Makes YouTube & Netflix interactive.\n\n" +
-                    "**Top Books:**\n" +
-                    "📌 *Assimil Series* – Great for self-study.\n" +
-                    "📌 *Teach Yourself Series* – Well-structured lessons.\n" +
-                    "📌 *Fluent Forever* by Gabriel Wyner – Focuses on memory techniques."
-                )
-                .setColor("#ACF508")
-                .setFooter({ text: "Page 3/7 | Use ◀️▶️ to navigate" }),
-
-            // Page 4: Speaking & Listening Strategies
+            // Page 3: Speaking & Listening Strategies
             new EmbedBuilder()
                 .setTitle("🗣️ Speaking & Listening Strategies")
                 .setDescription(
-                    "**Speaking Tips:**\n" +
-                    "✅ Start with **Shadowing** (repeat after native speakers).\n" +
-                    "✅ Use **Italki / Preply** for 1-on-1 speaking practice.\n" +
-                    "✅ Think in your target language.\n" +
-                    "✅ Join **Discord servers** or **language exchange communities**.\n\n" +
-                    "**Listening Tips:**\n" +
-                    "🎧 **Listen to Slow Podcasts** (e.g., ‘Slow German’ or ‘News in Slow Spanish’).\n" +
-                    "🎧 Use **subtitled YouTube videos** & then watch again without subtitles.\n" +
-                    "🎧 Focus on **phrases, not individual words**."
+                    "**Speaking Techniques:**\n" +
+                    "✅ Practice shadowing (repeat after native speakers).\n" +
+                    "✅ Read aloud to improve pronunciation and confidence.\n" +
+                    "✅ Think in your target language to improve fluency.\n\n" +
+                    "**Listening Techniques:**\n" +
+                    "🎧 Listen to slow, clear speech (news, audiobooks, interviews).\n" +
+                    "🎧 Pay attention to sentence structures and common phrases.\n" +
+                    "🎧 Repeat phrases until they feel natural."
                 )
                 .setColor("#ACF508")
-                .setFooter({ text: "Page 4/7 | Use ◀️▶️ to navigate" }),
+                .setFooter({ text: "Page 3/6 | Use ◀️▶️ to navigate" }),
 
-            // Page 5: Reading & Writing Methods
+            // Page 4: Reading & Writing Methods
             new EmbedBuilder()
                 .setTitle("📖 Reading & Writing Methods")
                 .setDescription(
-                    "**Reading Tips:**\n" +
-                    "📖 **Start with graded readers** (books written for learners).\n" +
-                    "📖 Highlight unknown words but don’t stop reading.\n" +
-                    "📖 Use **Language Reactor** for subtitles & word definitions.\n\n" +
-                    "**Writing Tips:**\n" +
-                    "✍️ Keep a **daily journal** in your target language.\n" +
-                    "✍️ Use **ChatGPT / Grammarly / Deepl Write** to correct mistakes.\n" +
-                    "✍️ Copy **sentences from native speakers** (sentence mining)."
+                    "**Reading Techniques:**\n" +
+                    "📖 Start with simplified texts before moving to native materials.\n" +
+                    "📖 Read content that interests you—stories, news, or history.\n" +
+                    "📖 Avoid translating every word; focus on understanding context.\n\n" +
+                    "**Writing Techniques:**\n" +
+                    "✍️ Keep a language journal—write short daily entries.\n" +
+                    "✍️ Copy well-written sentences to improve structure and vocabulary.\n" +
+                    "✍️ Review and refine your writing regularly."
                 )
                 .setColor("#ACF508")
-                .setFooter({ text: "Page 5/7 | Use ◀️▶️ to navigate" }),
+                .setFooter({ text: "Page 4/6 | Use ◀️▶️ to navigate" }),
 
-            // Page 6: Memory Techniques & Note-taking
+            // Page 5: Memory Retention Techniques
             new EmbedBuilder()
-                .setTitle("📝 Memory Techniques & Note-taking")
+                .setTitle("📝 Memory Retention Techniques")
                 .setDescription(
-                    "**Best Memory Techniques:**\n" +
-                    "🧠 **Spaced Repetition** – Review words at increasing intervals.\n" +
-                    "🧠 **Mnemonics & Stories** – Create funny images for words.\n" +
-                    "🧠 **Memory Palaces** – Place words in a familiar location in your mind.\n\n" +
-                    "**Effective Note-taking:**\n" +
-                    "📌 Use the **Cornell Method** (divide notes into sections: words, meanings, examples).\n" +
-                    "📌 Keep a **personal phrasebook** (write sentences, not just words).\n" +
-                    "📌 Write in **colors** (blue for nouns, red for verbs, etc.)."
+                    "**Enhance Retention with These Methods:**\n\n" +
+                    "🧠 **Spaced Repetition** – Review material at increasing intervals.\n" +
+                    "🧠 **Mnemonic Devices** – Associate words with vivid images or stories.\n" +
+                    "🧠 **Memory Palaces** – Link vocabulary to familiar locations in your mind.\n\n" +
+                    "**Note-taking Strategies:**\n" +
+                    "📌 Use the **Cornell Method** to structure notes effectively.\n" +
+                    "📌 Maintain a **personal phrasebook** with useful expressions.\n" +
+                    "📌 Highlight key words in different colors to improve recall."
                 )
                 .setColor("#ACF508")
-                .setFooter({ text: "Page 6/7 | Use ◀️▶️ to navigate" }),
+                .setFooter({ text: "Page 5/6 | Use ◀️▶️ to navigate" }),
 
-            // Page 7: How to Stay Motivated
+            // Page 6: Staying Motivated
             new EmbedBuilder()
                 .setTitle("🔥 Staying Motivated in Language Learning")
                 .setDescription(
-                    "📌 **Find Your Purpose:** Why do you want to learn? Travel? Work? Love?\n" +
-                    "📌 **Make It Fun:** Watch movies, listen to music, and read about topics you love.\n" +
-                    "📌 **Join a Community:** Engage in Discord, Reddit, or online study groups.\n" +
-                    "📌 **Track Progress:** Keep a streak tracker (use apps like Duolingo, Anki, or a notebook).\n" +
-                    "📌 **Reward Yourself:** Set goals and celebrate milestones."
+                    "📌 **Define Your Purpose:** Why do you want to learn this language?\n" +
+                    "📌 **Make It Enjoyable:** Engage with content you love—books, music, movies.\n" +
+                    "📌 **Join a Community:** Find conversation partners or study groups.\n" +
+                    "📌 **Track Progress:** Maintain a log of achievements and milestones.\n" +
+                    "📌 **Celebrate Small Wins:** Recognize and reward your improvements."
                 )
                 .setColor("#ACF508")
-                .setFooter({ text: "Page 7/7 | Use ◀️ to navigate" }),
+                .setFooter({ text: "Page 6/6 | Use ◀️ to navigate" }),
         ];
 
         let currentPage = 0;
