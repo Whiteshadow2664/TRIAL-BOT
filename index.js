@@ -33,7 +33,7 @@ const antiInvite = require("./antiInvite");
 
 const cefr = require('./cefr');
 const classCommand = require('./commands/class');
-
+const studyTips = require('./commands/studytips');
 
 
 
@@ -160,7 +160,9 @@ client.on('messageCreate', async (message) => {
 
 
 
-
+if (message.content.toLowerCase() === '!tips') {
+    studyTips.execute(message);
+}
 
 
 if (message.content.toLowerCase() === '!class') {
