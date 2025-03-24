@@ -31,6 +31,10 @@ const antiInvite = require("./antiInvite");
 
 
 
+
+
+const bump = require("./bump.js");
+
 const cefr = require('./cefr');
 const classCommand = require('./commands/class');
 const studyTips = require('./commands/studytips');
@@ -145,6 +149,12 @@ client.on('messageCreate', async (message) => {
  
     
 
+
+    await bump.trackBump(message); // Track bumps in cache
+
+    if (message.content === "!brank") {
+        await bump.showLeaderboard(message);
+    }
 
 
 
