@@ -15,7 +15,8 @@ module.exports = {
                     "📌 **Speaking & Listening Strategies**\n" +
                     "📌 **Reading & Writing Methods**\n" +
                     "📌 **Memory Retention Techniques**\n" +
-                    "📌 **How to Stay Motivated**"
+                    "📌 **How to Stay Motivated**\n\n" +
+                    "[📖 Click here for more resources](https://example.com/language-learning-resources)"
                 )
                 .setColor("#ACF508")
                 .setFooter({ text: "Page 1/6 | Use ▶️ to navigate" }),
