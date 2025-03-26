@@ -42,8 +42,7 @@ const examCommand = require('./commands/exam.js');
 
 
 
-const { sendTicketMessage, handleInteraction } = require('./commands/ticket.js');
-
+const ticket = require('./commands/ticket.js');
 
 
 
@@ -458,17 +457,17 @@ delete activeQuizzes[message.author.id];
 
 
 client.on('interactionCreate', async (interaction) => {
-    try {
-        await handleInteraction(interaction);
-    } catch (error) {
-        console.error('Error handling interaction:', error);
-    }
+  if (!interaction.isButton()) return;
+
+  if (interaction.customId === 'create_ticket') ticket.createTicket(interaction);
+  if (interaction.customId === 'close_ticket') ticket.closeTicket(interaction);
 });
 
 
 client.once('ready', () => {
     console.log(`${client.user.tag} is online!`);
     linkFilter(client);
+    ticket.setup(client);
     antiInvite(client);
     // Start the status update cycle
     setInterval(() => updateBotStatus(client), 10000); // Update every 10 seconds
