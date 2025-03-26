@@ -1,4 +1,4 @@
-const ticket = require("./support/ticket.js");
+const ticket = require("./ticket.js");
 
 module.exports = (client) => {
   client.on("interactionCreate", async (interaction) => {
