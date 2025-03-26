@@ -457,12 +457,6 @@ delete activeQuizzes[message.author.id];
 }); 
 
 
-client.on('interactionCreate', async (interaction) => {
-  if (!interaction.isButton()) return;
-
-  if (interaction.customId === 'create_ticket') ticket.createTicket(interaction);
-  if (interaction.customId === 'close_ticket') ticket.closeTicket(interaction);
-});
 
 
 client.once('ready', () => {
