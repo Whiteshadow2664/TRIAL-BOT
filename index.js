@@ -37,7 +37,16 @@ const examCommand = require('./commands/exam.js');
 
 
 
-const ticket = require('./commands/ticket');
+
+
+
+
+
+const { sendTicketMessage, handleInteraction } = require('./ticket.js');
+
+
+
+
 
 
 
@@ -187,13 +196,6 @@ if (message.content.toLowerCase() === '!cefr') {
     cefr.execute(message);
 }
 
-
-
-
-
-
-
-
 if (message.content.toLowerCase() === "!ws") {
     handleWorksheet(message, client);
 }
@@ -221,10 +223,6 @@ if (message.content === '!afk') {
 
 if (message.content.toLowerCase() === '!ddd') {
         dddGame.execute(message);
-}
-
-if (message.content.toLowerCase() === '!ticket') {
-  ticket.execute(message);
 }
 
 if(message.content.toLowerCase().startsWith('!suggestion')) {
@@ -478,10 +476,18 @@ client.once('ready', () => {
 client.on('guildMemberAdd', (member) => {
     handleMemberJoin(member); // Call the handle join function
 }); 
-
+   
 // Event when a member leaves the server
 client.on('guildMemberRemove', (member) => {
     handleMemberLeave(member); // Call the handle leave function
 });
+
+
+sendTicketMessage(client); // Auto-send ticket button on startup
+});
+
+client.on('interactionCreate', handleInteraction); // Handle ticket button clicks
+
+
 
 client.login(DISCORD_TOKEN);
