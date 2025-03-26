@@ -17,7 +17,7 @@ const { handleMemberJoin, handleMemberLeave } = require('./welcomeHandler');
 const announcement = require('./commands/announcement');
 const { handleBadWords } = require('./badWords');
 const suggestion = require('./commands/suggestion');
-const ticket = require('./commands/ticket');
+
 const linkFilter = require('./linkFilter');
 const { handleSpamDetection } = require('./spamHandler');
 const updates = require('./commands/updates');
@@ -28,17 +28,19 @@ const handleWorksheet = require('./worksheet');
 const afkHandler = require('./afk.js');
 const purgeCommand = require('./purge.js');
 const antiInvite = require("./antiInvite");
-
-
-
-
-
-const bump = require("./bumps.js");
-
 const cefr = require('./cefr');
 const classCommand = require('./commands/class');
 const studyTips = require('./commands/studytips');
 const examCommand = require('./commands/exam.js');
+
+
+
+
+
+const ticket = require('./commands/ticket');
+
+
+
 
 
 // Environment Variables
@@ -146,18 +148,19 @@ client.on('messageCreate', async (message) => {
 
 
         await handleSpamDetection(message);
- 
+
+
+
+
+
+
+
+
+
+
+
+
     
-
-
-    await bump.trackBump(message); // Track bumps in cache
-
-    if (message.content === "!brank") {
-        await bump.showLeaderboard(message);
-    }
-
-
-
 
 
 
