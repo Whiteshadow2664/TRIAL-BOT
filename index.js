@@ -469,6 +469,7 @@ client.once('ready', () => {
     console.log(`${client.user.tag} is online!`);
     linkFilter(client);
     ticket.setup(client);
+    setupEvents(client);
     antiInvite(client);
     // Start the status update cycle
     setInterval(() => updateBotStatus(client), 10000); // Update every 10 seconds
