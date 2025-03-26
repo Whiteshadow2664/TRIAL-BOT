@@ -43,7 +43,7 @@ module.exports = {
     if (!interaction.isButton() || interaction.customId !== "create_ticket") return;
 
     try {
-      await interaction.deferReply(); // ✅ No ephemeral flag
+      await interaction.deferReply({ ephemeral: true });
 
       const guild = interaction.guild;
       const user = interaction.user;
@@ -53,16 +53,19 @@ module.exports = {
       );
 
       if (!category) {
-        return interaction.editReply({ content: '❌ Error: Category "Channels" not found.' });
+        return interaction.editReply({ content: '❌ Error: Category "Channels" not found.', ephemeral: true })
+          .then(msg => setTimeout(() => msg.delete(), 5000));
       }
 
       if (guild.channels.cache.some((ch) => ch.name === `ticket-${user.id}`)) {
-        return interaction.editReply({ content: "❌ You already have an open ticket." });
+        return interaction.editReply({ content: "❌ You already have an open ticket.", ephemeral: true })
+          .then(msg => setTimeout(() => msg.delete(), 5000));
       }
 
       const modRole = guild.roles.cache.find((r) => r.name === "Moderator");
       if (!modRole) {
-        return interaction.editReply({ content: "❌ Moderator role not found." });
+        return interaction.editReply({ content: "❌ Moderator role not found.", ephemeral: true })
+          .then(msg => setTimeout(() => msg.delete(), 5000));
       }
 
       const ticketChannel = await guild.channels.create({
@@ -99,14 +102,17 @@ module.exports = {
       const ticketMessage = await ticketChannel.send({ embeds: [embed] });
       await ticketMessage.react("⏹️");
 
-      await interaction.editReply({ content: `✅ Your ticket has been created: ${ticketChannel}` });
+      // Notify moderators
+      await ticketChannel.send(`@Moderator please assist ${user.username}'s ticket!`);
+
+      interaction.editReply({ content: `✅ Your ticket has been created: ${ticketChannel}`, ephemeral: true })
+        .then(msg => setTimeout(() => msg.delete(), 5000));
 
     } catch (error) {
       console.error("❌ Error creating ticket:", error);
-      
-      // ✅ Ensure only one response is sent
       if (interaction.deferred) {
-        await interaction.editReply({ content: "❌ An error occurred while creating your ticket." });
+        interaction.editReply({ content: "❌ An error occurred while creating your ticket.", ephemeral: true })
+          .then(msg => setTimeout(() => msg.delete(), 5000));
       }
     }
   },
