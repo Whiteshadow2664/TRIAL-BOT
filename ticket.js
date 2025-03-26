@@ -43,7 +43,7 @@ module.exports = {
     if (!interaction.isButton() || interaction.customId !== "create_ticket") return;
 
     try {
-      await interaction.deferReply({ ephemeral: true }); // ✅ Ensure interaction is deferred immediately
+      await interaction.deferReply(); // ✅ No ephemeral flag
 
       const guild = interaction.guild;
       const user = interaction.user;
@@ -104,7 +104,7 @@ module.exports = {
     } catch (error) {
       console.error("❌ Error creating ticket:", error);
       
-      // ✅ Ensure we only send one reply
+      // ✅ Ensure only one response is sent
       if (interaction.deferred) {
         await interaction.editReply({ content: "❌ An error occurred while creating your ticket." });
       }
