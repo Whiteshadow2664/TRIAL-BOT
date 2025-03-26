@@ -42,7 +42,7 @@ const examCommand = require('./commands/exam.js');
 
 
 
-const { sendTicketMessage, handleInteraction } = require('./ticket.js');
+const { sendTicketMessage, handleInteraction } = require('./commands/ticket.js');
 
 
 
