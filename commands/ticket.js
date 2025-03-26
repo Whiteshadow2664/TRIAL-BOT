@@ -1,37 +1,8 @@
-const { EmbedBuilder, PermissionFlagsBits, ChannelType, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const { EmbedBuilder, PermissionFlagsBits, ChannelType } = require('discord.js');
 
 module.exports = {
   name: 'ticket',
-  description: 'Setup ticket system or create a ticket.',
-  async execute(message, args) {
-    if (args[0] === 'setup') {
-      // Check if the user has permission to set up the ticket system
-      if (!message.member.permissions.has(PermissionFlagsBits.Administrator)) {
-        return message.reply('You do not have permission to set up the ticket system.');
-      }
-
-      const ticketChannel = message.guild.channels.cache.get('1354334158599753741'); // Ticket System Channel
-
-      if (!ticketChannel) {
-        return message.reply('Error: Ticket system channel not found.');
-      }
-
-      const embed = new EmbedBuilder()
-        .setTitle('🎟️ Support Ticket System')
-        .setDescription('Click the button below to create a support ticket.')
-        .setColor('#acf508');
-
-      const button = new ButtonBuilder()
-        .setCustomId('create_ticket')
-        .setLabel('Create Ticket')
-        .setStyle(ButtonStyle.Primary);
-
-      const row = new ActionRowBuilder().addComponents(button);
-
-      await ticketChannel.send({ embeds: [embed], components: [row] });
-      return message.reply('Ticket system has been set up successfully.');
-    }
-  },
+  description: 'Handle ticket creation and management.',
 
   async handleInteraction(interaction) {
     if (!interaction.isButton() || interaction.customId !== 'create_ticket') return;
