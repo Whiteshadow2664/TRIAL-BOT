@@ -165,7 +165,10 @@ client.on('messageCreate', async (message) => {
 
 
 
-
+if (message.content.toLowerCase() === '!sendticket') {
+    sendTicketMessage(client);
+    message.channel.send('Ticket message sent.');
+}
 
 
 
