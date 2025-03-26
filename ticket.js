@@ -43,7 +43,7 @@ module.exports = {
     if (!interaction.isButton() || interaction.customId !== "create_ticket") return;
 
     try {
-      await interaction.deferReply({ ephemeral: true });
+      await interaction.deferReply();
 
       const guild = interaction.guild;
       const user = interaction.user;
@@ -53,18 +53,18 @@ module.exports = {
       );
 
       if (!category) {
-        return interaction.editReply({ content: '❌ Error: Category "Channels" not found.', ephemeral: true })
+        return interaction.editReply({ content: '❌ Error: Category "Channels" not found.' })
           .then(msg => setTimeout(() => msg.delete(), 5000));
       }
 
       if (guild.channels.cache.some((ch) => ch.name === `ticket-${user.id}`)) {
-        return interaction.editReply({ content: "❌ You already have an open ticket.", ephemeral: true })
+        return interaction.editReply({ content: "❌ You already have an open ticket." })
           .then(msg => setTimeout(() => msg.delete(), 5000));
       }
 
       const modRole = guild.roles.cache.find((r) => r.name === "Moderator");
       if (!modRole) {
-        return interaction.editReply({ content: "❌ Moderator role not found.", ephemeral: true })
+        return interaction.editReply({ content: "❌ Moderator role not found." })
           .then(msg => setTimeout(() => msg.delete(), 5000));
       }
 
@@ -105,13 +105,13 @@ module.exports = {
       // Notify moderators
       await ticketChannel.send(`@Moderator please assist ${user.username}'s ticket!`);
 
-      interaction.editReply({ content: `✅ Your ticket has been created: ${ticketChannel}`, ephemeral: true })
+      interaction.editReply({ content: `✅ Your ticket has been created: ${ticketChannel}` })
         .then(msg => setTimeout(() => msg.delete(), 5000));
 
     } catch (error) {
       console.error("❌ Error creating ticket:", error);
       if (interaction.deferred) {
-        interaction.editReply({ content: "❌ An error occurred while creating your ticket.", ephemeral: true })
+        interaction.editReply({ content: "❌ An error occurred while creating your ticket." })
           .then(msg => setTimeout(() => msg.delete(), 5000));
       }
     }
