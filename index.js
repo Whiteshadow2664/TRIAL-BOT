@@ -464,32 +464,3 @@ client.on('interactionCreate', async interaction => {
 
 
 
-client.once('ready', () => {
-    console.log(`${client.user.tag} is online!`);
-    linkFilter(client);
-    antiInvite(client);
-
-
-    await sendTicketMessage(client);
-    // Start the status update cycle
-    setInterval(() => updateBotStatus(client), 10000); // Update every 10 seconds
-});
-
-// Event when a member joins the server
-client.on('guildMemberAdd', (member) => {
-    handleMemberJoin(member); // Call the handle join function
-}); 
-   
-// Event when a member leaves the server
-client.on('guildMemberRemove', (member) => {
-    handleMemberLeave(member); // Call the handle leave function
-});
-
-
-
-
-
-
-
-
-client.login(DISCORD_TOKEN);
