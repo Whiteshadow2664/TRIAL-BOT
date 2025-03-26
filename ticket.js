@@ -102,11 +102,13 @@ module.exports = {
       const ticketMessage = await ticketChannel.send({ embeds: [embed] });
       await ticketMessage.react("⏹️");
 
-      // Notify moderators
-      await ticketChannel.send(`@Moderator please assist ${user.username}'s ticket!`);
-
       interaction.editReply({ content: `✅ Your ticket has been created: ${ticketChannel}` })
         .then(msg => setTimeout(() => msg.delete(), 5000));
+
+      // ⏳ Wait 5 minutes (300,000ms), then notify moderators
+      setTimeout(() => {
+        ticketChannel.send(`@Moderator please assist ${user.username}'s ticket!`);
+      }, 300000); // 5 minutes in milliseconds
 
     } catch (error) {
       console.error("❌ Error creating ticket:", error);
