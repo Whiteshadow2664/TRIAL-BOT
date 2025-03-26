@@ -5,7 +5,6 @@ const {
   ButtonStyle,
   PermissionFlagsBits,
   ChannelType,
-  MessageFlags,
 } = require("discord.js");
 
 module.exports = {
@@ -44,7 +43,7 @@ module.exports = {
     if (!interaction.isButton() || interaction.customId !== "create_ticket") return;
 
     try {
-      await interaction.deferReply({ flags: MessageFlags.Ephemeral }); // ✅ Defer interaction immediately
+      await interaction.deferReply({ ephemeral: true }); // ✅ Ensure interaction is deferred immediately
 
       const guild = interaction.guild;
       const user = interaction.user;
@@ -102,16 +101,11 @@ module.exports = {
 
       await interaction.editReply({ content: `✅ Your ticket has been created: ${ticketChannel}` });
 
-      setTimeout(async () => {
-        if (guild.channels.cache.has(ticketChannel.id)) {
-          await ticketChannel.send({ content: `${modRole}, this ticket is still open and requires assistance.` });
-        }
-      }, 5 * 60 * 1000);
     } catch (error) {
       console.error("❌ Error creating ticket:", error);
-      if (!interaction.replied && !interaction.deferred) {
-        await interaction.reply({ content: "❌ An error occurred while creating your ticket.", flags: MessageFlags.Ephemeral });
-      } else {
+      
+      // ✅ Ensure we only send one reply
+      if (interaction.deferred) {
         await interaction.editReply({ content: "❌ An error occurred while creating your ticket." });
       }
     }
