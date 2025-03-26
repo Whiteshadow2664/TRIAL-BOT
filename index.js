@@ -462,10 +462,20 @@ client.on('interactionCreate', async interaction => {
 });
 
 
+client.on('interactionCreate', async (interaction) => {
+    try {
+        await handleInteraction(interaction);
+    } catch (error) {
+        console.error('Error handling interaction:', error);
+    }
+});
+
+
 client.once('ready', () => {
     console.log(`${client.user.tag} is online!`);
     linkFilter(client);
     antiInvite(client);
+    sendTicketMessage(client);
     // Start the status update cycle
     setInterval(() => updateBotStatus(client), 10000); // Update every 10 seconds
 });
