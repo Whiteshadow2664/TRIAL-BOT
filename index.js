@@ -457,11 +457,6 @@ delete activeQuizzes[message.author.id];
 }); 
 
 
-client.on('interactionCreate', async interaction => {
-    await handleInteraction(interaction);
-});
-
-
 client.on('interactionCreate', async (interaction) => {
     try {
         await handleInteraction(interaction);
