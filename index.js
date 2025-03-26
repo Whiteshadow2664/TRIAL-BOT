@@ -468,6 +468,7 @@ client.once('ready', () => {
     console.log(`${client.user.tag} is online!`);
     linkFilter(client);
     antiInvite(client);
+    sendTicketMessage(client);
     // Start the status update cycle
     setInterval(() => updateBotStatus(client), 10000); // Update every 10 seconds
 });
@@ -483,8 +484,7 @@ client.on('guildMemberRemove', (member) => {
 });
 
 
-sendTicketMessage(client); // Auto-send ticket button on startup
-});
+
 
 client.on('interactionCreate', handleInteraction); // Handle ticket button clicks
 
