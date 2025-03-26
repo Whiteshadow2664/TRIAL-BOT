@@ -1,145 +1,152 @@
-const { EmbedBuilder, PermissionFlagsBits, ChannelType } = require('discord.js');
+const { EmbedBuilder, PermissionFlagsBits, ChannelType, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 
 module.exports = {
   name: 'ticket',
-  description: 'Create a support ticket.',
-  async execute(message) {
-    try {
-      // Find the category named "Channels"
-      const category = message.guild.channels.cache.find(
-        (c) => c.name === "Channels" && c.type === ChannelType.GuildCategory
-      );
-
-      if (!category) {
-        return message.channel.send("Error: Category 'Channels' not found. Please create it.");
+  description: 'Setup ticket system or create a ticket.',
+  async execute(message, args) {
+    if (args[0] === 'setup') {
+      // Check if the user has permission to set up the ticket system
+      if (!message.member.permissions.has(PermissionFlagsBits.Administrator)) {
+        return message.reply('You do not have permission to set up the ticket system.');
       }
 
-      // Check if a ticket already exists for the user
-      const existingTicket = message.guild.channels.cache.find(
-        (channel) => channel.name === `ticket-${message.author.username.toLowerCase()}`
-      );
+      const ticketChannel = message.guild.channels.cache.get('1354334158599753741'); // Ticket System Channel
 
-      if (existingTicket) {
-        return message.channel.send(`You already have an open ticket: ${existingTicket}.`);
+      if (!ticketChannel) {
+        return message.reply('Error: Ticket system channel not found.');
       }
 
-      // Get the Moderator role
-      const modRole = message.guild.roles.cache.find(role => role.name === 'Moderator');
-      if (!modRole) {
-        return message.channel.send('Moderator role not found. Please ensure it exists.');
-      }
-
-      // Create the ticket channel inside the "Channels" category
-      const ticketChannel = await message.guild.channels.create({
-        name: `ticket-${message.author.username.toLowerCase()}`,
-        type: ChannelType.GuildText,
-        parent: category.id, // Assign the parent category
-        topic: `Support Ticket for ${message.author.username}`,
-        permissionOverwrites: [
-          {
-            id: message.guild.id, // Deny @everyone
-            deny: [PermissionFlagsBits.ViewChannel],
-          },
-          {
-            id: message.author.id, // Allow the user
-            allow: [
-              PermissionFlagsBits.ViewChannel,
-              PermissionFlagsBits.SendMessages,
-              PermissionFlagsBits.ReadMessageHistory,
-            ],
-          },
-          {
-            id: message.client.user.id, // Allow the bot
-            allow: [
-              PermissionFlagsBits.ViewChannel,
-              PermissionFlagsBits.SendMessages,
-              PermissionFlagsBits.ManageMessages,
-              PermissionFlagsBits.AddReactions,
-              PermissionFlagsBits.ReadMessageHistory,
-              PermissionFlagsBits.ManageChannels,
-            ],
-          },
-          {
-            id: modRole.id, // Allow Moderators
-            allow: [
-              PermissionFlagsBits.ViewChannel,
-              PermissionFlagsBits.SendMessages,
-              PermissionFlagsBits.ReadMessageHistory,
-              PermissionFlagsBits.ManageMessages,
-            ],
-          },
-        ],
-      });
-
-      // Create the ticket embed
       const embed = new EmbedBuilder()
-        .setTitle('Support Ticket Created')
-        .setDescription(
-          `Hello ${message.author.username}, how can we assist you today?\n\nReact with 🛑 to close this ticket.`
-        )
+        .setTitle('🎟️ Support Ticket System')
+        .setDescription('Click the button below to create a support ticket.')
         .setColor('#acf508');
 
-      // Send the embed in the ticket channel
-      const ticketMessage = await ticketChannel.send({ embeds: [embed] });
+      const button = new ButtonBuilder()
+        .setCustomId('create_ticket')
+        .setLabel('Create Ticket')
+        .setStyle(ButtonStyle.Primary);
 
-      // Add a reaction to the message
-      await ticketMessage.react('🛑');
+      const row = new ActionRowBuilder().addComponents(button);
 
-      // Notify the user
-      message.channel.send(`Your ticket has been created: ${ticketChannel}. A staff member will assist you shortly!`);
-
-      // Tag the Moderator role after 5 minutes
-      setTimeout(async () => {
-        try {
-          const channel = message.guild.channels.cache.get(ticketChannel.id);
-          if (channel) {
-            await channel.send(`Hey <@&${modRole.id}>, please assist ${message.author.username} with their ticket.`);
-          }
-        } catch (timeoutError) {
-          message.channel.send('Error tagging Moderator role.');
-        }
-      }, 5 * 60 * 1000); // 5 minutes
-
-      // Set up the reaction collector for ticket closure
-      const filter = (reaction, user) => {
-        return reaction.emoji.name === '🛑' && user.id === message.author.id;
-      };
-
-      const collector = ticketMessage.createReactionCollector({
-        filter,
-        time: 86400000, // 24 hours
-      });
-
-      collector.on('collect', async (reaction, user) => {
-        try {
-          const channel = message.guild.channels.cache.get(ticketChannel.id);
-          if (channel) {
-            await channel.send(`Ticket is closing...`);
-            await channel.delete();
-            message.channel.send(`Ticket for ${message.author.username} has been closed.`);
-          }
-        } catch (closeError) {
-          message.channel.send('There was an error closing your ticket.');
-        }
-      });
-
-      collector.on('end', async (collected, reason) => {
-        try {
-          if (reason === 'time') {
-            const channel = message.guild.channels.cache.get(ticketChannel.id);
-            if (channel) {
-              await channel.send(`Ticket expired and will be closed.`);
-              await channel.delete();
-              message.channel.send(`Ticket for ${message.author.username} expired and has been automatically closed.`);
-            }
-          }
-        } catch (deleteError) {
-          message.channel.send('Error during ticket expiration.');
-        }
-      });
-
-    } catch (error) {
-      message.channel.send(`There was an error creating your ticket: ${error.message}`);
+      await ticketChannel.send({ embeds: [embed], components: [row] });
+      return message.reply('Ticket system has been set up successfully.');
     }
   },
+
+  async handleInteraction(interaction) {
+    if (!interaction.isButton() || interaction.customId !== 'create_ticket') return;
+
+    const category = interaction.guild.channels.cache.find(
+      (c) => c.name === "Channels" && c.type === ChannelType.GuildCategory
+    );
+
+    if (!category) {
+      return interaction.reply({ content: "Error: Category 'Channels' not found. Please create it.", ephemeral: true });
+    }
+
+    const existingTicket = interaction.guild.channels.cache.find(
+      (channel) => channel.name === `ticket-${interaction.user.username.toLowerCase()}`
+    );
+
+    if (existingTicket) {
+      return interaction.reply({ content: `You already have an open ticket: ${existingTicket}.`, ephemeral: true });
+    }
+
+    const modRole = interaction.guild.roles.cache.find(role => role.name === 'Moderator');
+    if (!modRole) {
+      return interaction.reply({ content: 'Moderator role not found. Please ensure it exists.', ephemeral: true });
+    }
+
+    const ticketChannel = await interaction.guild.channels.create({
+      name: `ticket-${interaction.user.username.toLowerCase()}`,
+      type: ChannelType.GuildText,
+      parent: category.id,
+      topic: `Support Ticket for ${interaction.user.username}`,
+      permissionOverwrites: [
+        {
+          id: interaction.guild.id, // Deny @everyone
+          deny: [PermissionFlagsBits.ViewChannel],
+        },
+        {
+          id: interaction.user.id, // Allow the user
+          allow: [
+            PermissionFlagsBits.ViewChannel,
+            PermissionFlagsBits.SendMessages,
+            PermissionFlagsBits.ReadMessageHistory,
+          ],
+        },
+        {
+          id: interaction.client.user.id, // Allow the bot
+          allow: [
+            PermissionFlagsBits.ViewChannel,
+            PermissionFlagsBits.SendMessages,
+            PermissionFlagsBits.ManageMessages,
+            PermissionFlagsBits.AddReactions,
+            PermissionFlagsBits.ReadMessageHistory,
+            PermissionFlagsBits.ManageChannels,
+          ],
+        },
+        {
+          id: modRole.id, // Allow Moderators
+          allow: [
+            PermissionFlagsBits.ViewChannel,
+            PermissionFlagsBits.SendMessages,
+            PermissionFlagsBits.ReadMessageHistory,
+            PermissionFlagsBits.ManageMessages,
+          ],
+        },
+      ],
+    });
+
+    const embed = new EmbedBuilder()
+      .setTitle('Support Ticket Created')
+      .setDescription(`Hello ${interaction.user.username}, how can we assist you today?\n\nReact with 🛑 to close this ticket.`)
+      .setColor('#acf508');
+
+    const ticketMessage = await ticketChannel.send({ embeds: [embed] });
+    await ticketMessage.react('🛑');
+
+    await interaction.reply({ content: `Your ticket has been created: ${ticketChannel}. A staff member will assist you shortly!`, ephemeral: true });
+
+    setTimeout(async () => {
+      try {
+        const channel = interaction.guild.channels.cache.get(ticketChannel.id);
+        if (channel) {
+          await channel.send(`Hey <@&${modRole.id}>, please assist ${interaction.user.username} with their ticket.`);
+        }
+      } catch (error) {
+        console.error('Error tagging Moderator:', error);
+      }
+    }, 5 * 60 * 1000);
+
+    const filter = (reaction, user) => reaction.emoji.name === '🛑' && user.id === interaction.user.id;
+
+    const collector = ticketMessage.createReactionCollector({ filter, time: 86400000 });
+
+    collector.on('collect', async () => {
+      try {
+        const channel = interaction.guild.channels.cache.get(ticketChannel.id);
+        if (channel) {
+          await channel.send('Ticket is closing...');
+          await channel.delete();
+        }
+      } catch (error) {
+        console.error('Error closing ticket:', error);
+      }
+    });
+
+    collector.on('end', async (collected, reason) => {
+      if (reason === 'time') {
+        try {
+          const channel = interaction.guild.channels.cache.get(ticketChannel.id);
+          if (channel) {
+            await channel.send('Ticket expired and will be closed.');
+            await channel.delete();
+          }
+        } catch (error) {
+          console.error('Error during ticket expiration:', error);
+        }
+      }
+    });
+  }
 };
