@@ -1,3 +1,4 @@
+const { MessageFlags } = require("discord.js");
 const ticket = require("./ticket.js");
 
 module.exports = (client) => {
@@ -9,11 +10,12 @@ module.exports = (client) => {
         await ticket.createTicket(interaction);
       } catch (error) {
         console.error("❌ Error handling interaction:", error);
+        
         if (!interaction.replied && !interaction.deferred) {
           try {
             await interaction.reply({
               content: "❌ An error occurred while processing your request.",
-              flags: MessageFlags.Ephemeral,
+              ephemeral: true, // ✅ Replaced `flags: MessageFlags.Ephemeral` with `ephemeral: true`
             });
           } catch (err) {
             console.error("❌ Failed to reply to interaction:", err);
