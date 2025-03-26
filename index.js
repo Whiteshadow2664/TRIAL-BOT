@@ -165,10 +165,7 @@ client.on('messageCreate', async (message) => {
 
 
 
-if (message.content.toLowerCase() === '!sendticket') {
-    sendTicketMessage(client);
-    message.channel.send('Ticket message sent.');
-}
+
 
 
 
@@ -473,7 +470,6 @@ client.once('ready', () => {
     console.log(`${client.user.tag} is online!`);
     linkFilter(client);
     antiInvite(client);
-    sendTicketMessage(client);
     // Start the status update cycle
     setInterval(() => updateBotStatus(client), 10000); // Update every 10 seconds
 });
