@@ -41,8 +41,8 @@ const examCommand = require('./commands/exam.js');
 
 
 
-const ticket = require("./support/ticket.js");
-const setupEvents = require("./support/events.js"); // Import the new event handler module
+const ticket = require("./ticket.js");
+const setupEvents = require("./events.js"); // Import the new event handler module
 
 
 
