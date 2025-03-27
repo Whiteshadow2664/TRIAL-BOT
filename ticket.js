@@ -50,16 +50,14 @@ module.exports = {
       const guild = interaction.guild;
       const user = interaction.user;
 
-      console.log("Available categories:", guild.channels.cache
-        .filter((c) => c.type === ChannelType.GuildCategory)
-        .map((c) => c.name));
+      
 
       const category = guild.channels.cache.find(
-        (c) => c.name === "Channels" && c.type === ChannelType.GuildCategory
+        (c) => c.name === "ANNOUNCEMENT" && c.type === ChannelType.GuildCategory
       );
 
       if (!category) {
-        return interaction.editReply({ content: '❌ Error: Category "Channels" not found.' })
+        return interaction.editReply({ content: '❌ Error: Category "ANNOUNCEMENT" not found.' })
           .then(msg => setTimeout(() => msg.delete(), 5000));
       }
 
