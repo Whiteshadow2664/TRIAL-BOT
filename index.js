@@ -40,7 +40,7 @@ const examCommand = require('./commands/exam.js');
 
 const kickCommand = require("./commands/kick");
 const muteCommand = require("./commands/mute");
-const banCommand = require("./ban");
+const banCommand = require("./commands/ban");
 const commands = require("./commands/command.js");
 const ticket = require("./ticket.js");
 const setupEvents = require("./events.js"); // Import the new event handler module
