@@ -40,7 +40,7 @@ const examCommand = require('./commands/exam.js');
 
 const kickCommand = require("./commands/kick");
 const muteCommand = require("./commands/mute");
-const banCommand = require("./commands/ban");
+const banCommand = require("./ban");
 const commands = require("./commands/command.js");
 const ticket = require("./ticket.js");
 const setupEvents = require("./events.js"); // Import the new event handler module
@@ -165,7 +165,9 @@ client.on('messageCreate', async (message) => {
 
 
 
-
+if (message.content.toLowerCase().startsWith("!ban")) {
+    banCommand.execute(message);
+}
 
 
 if (message.content.toLowerCase().startsWith("!kick")) {
