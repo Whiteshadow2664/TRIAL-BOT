@@ -1,11 +1,15 @@
-const { PermissionFlagsBits } = require("discord.js");
+const { PermissionsBitField } = require("discord.js");
 
 module.exports = {
     name: "ban",
     description: "Bans a mentioned user (Moderator only).",
     execute: async (message) => {
-        if (!message.member.roles.cache.some(role => role.name === "Moderator")) {
-            return message.reply("❌ You must have the **Moderator** role to use this command.");
+        if (!message.member.permissions.has(PermissionsBitField.Flags.BanMembers)) {
+            return message.reply("❌ You do not have permission to ban members.");
+        }
+
+        if (!message.guild.members.me.permissions.has(PermissionsBitField.Flags.BanMembers)) {
+            return message.reply("❌ I do not have permission to ban members.");
         }
 
         const user = message.mentions.users.first();
@@ -19,7 +23,7 @@ module.exports = {
         }
 
         if (!member.bannable) {
-            return message.reply("❌ I cannot ban this user. They might have a higher role.");
+            return message.reply("❌ I cannot ban this user. They might have a higher role than me.");
         }
 
         try {
