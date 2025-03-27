@@ -10,7 +10,9 @@ const {
 module.exports = {
   setup: async (client) => {
     const channel = await client.channels.fetch("1354334158599753741").catch(() => null);
-    if (!channel) return console.error("❌ Ticket setup channel not found!");
+    if (!channel) {
+      return console.error("❌ Ticket setup channel not found! Check the channel ID.");
+    }
 
     const messages = await channel.messages.fetch({ limit: 10 });
     if (
@@ -47,6 +49,10 @@ module.exports = {
 
       const guild = interaction.guild;
       const user = interaction.user;
+
+      console.log("Available categories:", guild.channels.cache
+        .filter((c) => c.type === ChannelType.GuildCategory)
+        .map((c) => c.name));
 
       const category = guild.channels.cache.find(
         (c) => c.name === "Channels" && c.type === ChannelType.GuildCategory
@@ -86,6 +92,7 @@ module.exports = {
             id: interaction.client.user.id,
             allow: [
               PermissionFlagsBits.ViewChannel,
+              PermissionFlagsBits.SendMessages, // ✅ Ensure bot can send messages
               PermissionFlagsBits.ManageMessages,
               PermissionFlagsBits.ManageChannels,
             ],
@@ -105,10 +112,13 @@ module.exports = {
       interaction.editReply({ content: `✅ Your ticket has been created: ${ticketChannel}` })
         .then(msg => setTimeout(() => msg.delete(), 5000));
 
-      // ⏳ Wait 5 minutes (300,000ms), then notify moderators
-      setTimeout(() => {
-        ticketChannel.send(`@Moderator please assist ${user.username}'s ticket!`);
-      }, 300000); // 5 minutes in milliseconds
+      // ⏳ Wait 5 minutes, then notify moderators (Fixed: Check if channel exists)
+      setTimeout(async () => {
+        const channel = await interaction.guild.channels.fetch(ticketChannel.id).catch(() => null);
+        if (channel) {
+          channel.send(`@Moderator please assist ${user.username}'s ticket!`);
+        }
+      }, 300000);
 
     } catch (error) {
       console.error("❌ Error creating ticket:", error);
