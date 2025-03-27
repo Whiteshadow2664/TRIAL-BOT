@@ -19,7 +19,7 @@ module.exports = {
         }
 
         try {
-            await member.timeout(10 * 60 * 1000, `Muted by ${message.author.tag}`);
+            await member.timeout(60 * 60 * 1000, `Muted by ${message.author.tag}`);
             message.channel.send(`✅ **${user.tag}** has been muted for 10 minutes.`);
         } catch (error) {
             console.error("❌ Error muting user:", error);
