@@ -2,10 +2,10 @@ const { PermissionFlagsBits } = require("discord.js");
 
 module.exports = {
     name: "kick",
-    description: "Kicks a mentioned user.",
+    description: "Kicks a mentioned user (Moderator only).",
     execute: async (message) => {
-        if (!message.member.permissions.has(PermissionFlagsBits.KickMembers)) {
-            return message.reply("❌ You don't have permission to use this command.");
+        if (!message.member.roles.cache.some(role => role.name === "Moderator")) {
+            return message.reply("❌ You must have the **Moderator** role to use this command.");
         }
 
         const user = message.mentions.users.first();
