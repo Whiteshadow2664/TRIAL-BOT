@@ -163,6 +163,20 @@ client.on('messageCreate', async (message) => {
 
 
 
+if (message.content.toLowerCase() === '!joke') {
+    const jokeCommand = require('./commands/joke.js');
+    jokeCommand.execute(message);
+}
+
+
+
+
+
+
+
+
+
+
 
 
 if (message.content.toLowerCase().startsWith("!ban")) {
