@@ -7,13 +7,14 @@ module.exports = {
     execute: async (message) => {
         try {
             const response = await axios.get("https://official-joke-api.appspot.com/random_joke");
-            const joke = `${response.data.setup}\n\n${response.data.punchline}`;
+            const joke = `**${response.data.setup}**\n\n*${response.data.punchline}*`;
 
             const embed = new EmbedBuilder()
                 .setColor("#acf508")
-                .setTitle("Random Joke")
+                .setTitle("📢 Random Joke")
                 .setDescription(joke)
-                .setFooter({ text: "Enjoy your joke!" });
+                .setFooter({ text: "Hope this made you smile!" })
+                .setTimestamp();
 
             message.channel.send({ embeds: [embed] });
         } catch (error) {
